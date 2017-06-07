@@ -36,4 +36,4 @@ that you forked from Git Hub.
 More Information
 ================
 
-See `docs/index.html`_.
+See https://slott56.github.io/NMEA-Tools/

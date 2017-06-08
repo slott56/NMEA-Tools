@@ -65,6 +65,8 @@ sent, the background loop of data resumes. There's no formal bracket for the dat
 
 See also:
 
+-   https://www.sparkfun.com/datasheets/GPS/NMEA%20Reference%20Manual-Rev2.1-Dec07.pdf
+
 -   https://en.wikipedia.org/wiki/NMEA_0183
 
 -   http://www.gpsinformation.org/dale/nmea.htm

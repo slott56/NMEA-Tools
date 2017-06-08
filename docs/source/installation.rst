@@ -37,8 +37,16 @@ By setting :envvar:`PYTHONPATH` we make sure the top-level project directory
 
     OK
 
+Driver
+======
+
+I use the driver for by BU-353 GPS antenna. See http://usglobalsat.com/s-122-bu-353-support.aspx
+I don't know if this is **required**. If your NMEA-0183 interface device doesn't seem
+to work, you may beed an appropriate USB driver.
+
 Using
 =====
+
 Once installed, you can mess with
 
 1.  Wiring up the NMEA-0183 to USB connector you've chosen. See :ref:`background`.

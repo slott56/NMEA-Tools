@@ -28,6 +28,10 @@ See http://www.gpsinformation.org/dale/nmea.htm#nmea
 
 See http://freenmea.net/docs
 
+See http://www.catb.org/gpsd/NMEA.html
+
+See https://www.sparkfun.com/datasheets/GPS/NMEA%20Reference%20Manual1.pdf
+
 Messages that are captured and (to an extent) parsed. 
 
 - $GPRMC - Recommended Minimum Specific GPS/TRANSIT Data
@@ -574,6 +578,22 @@ class Sentence_Factory( Callable ):
     
     :params args: The message fields. 
     :returns: :class:`Sentence` instance.
+    
+    >>> sf = Sentence_Factory()
+    >>> fields = b'GPVTG,59.53,T,,M,0.14,N,0.3,K'.split(b',')
+    >>> s = sf(*fields)
+    >>> s
+    GPVTG {'_args': ['59.53', 'T', '', 'M', '0.14', 'N', '0.3', 'K'],
+     '_name': 'GPVTG',
+     'course_1': 59.53,
+     'course_2': None,
+     'ref_1': 'T',
+     'ref_2': 'M',
+     'sog_1': 0.14,
+     'sog_2': 0.3,
+     'units_sog_1': 'N',
+     'units_sog_2': 'K'}
+     
     """
     sentence_class_map = {
         class_.__name__.encode('ascii'): class_ 

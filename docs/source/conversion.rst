@@ -95,6 +95,11 @@ Each route contains duplicate copies of relevant waypoints. It looks like
 GPSNavX handles this by appending a suffix to the waypoint to distinguish 
 duplicate copies.
 
+Note that the legacy chartplotter names are highly abbreviated, upper-case only.
+
+After conversion, it's helpful to manually edit the GPX documents to write
+more informative waypoint and route names.
+
 Example
 =======
 
@@ -128,6 +133,9 @@ Example
     INFO:__main__:23 sentences read
     INFO:__main__:Writing /Users/slott/Documents/Sailing/Cruise History/routes/rt1.gpx
 
-Why are there extra waypoints that are not referenced in the route?
+Why are there extra waypoints in the waypoint list that are not referenced in the route?
 
 Your guess is as good as mine.
+
+The names like ``"DLTVL RDVL"`` need to be manually changed in the resulting
+GPX file to something like ``"Deltaville to Reedville"``.

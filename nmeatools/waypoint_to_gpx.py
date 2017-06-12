@@ -41,16 +41,19 @@ optional arguments:
 ..  option:: --format {.gpx,.csv,.kml}, -f {.gpx,.csv,.kml}
 
     The output formaat. Currently, only .gpx is supported and it's the default.
+    
 """
-from nmeatools.nmea_data import Decoder
+from nmeatools.nmea_data_eager import Decoder
 from nmeatools.common import logged, Logging
 
-from xml.dom import getDOMImplementation
+from xml.dom import getDOMImplementation, XMLNS_NAMESPACE, XML_NAMESPACE
 import xml.etree.ElementTree as xml
 from pathlib import Path
 import argparse
 import sys
 import logging
+
+NAMESPACE = "http://www.topografix.com/GPX/1/1"
 
 logger = logging.getLogger(__name__)
 
@@ -62,14 +65,16 @@ def build_gpx(document, name, description):
     :param description: the string description to put in the metadata
     :returns: the ``<gpx>`` element
     """
-    gpx = document.createElement("gpx")
+    gpx = document.createElementNS(NAMESPACE, "gpx")
     gpx.setAttribute("version", "1.1")
     gpx.setAttribute("creator", "NMEA-Tools-1.1")
-    metadata = document.createElement("metadata")
-    name_node = document.createElement("name")
+    # Hacky workaround to get a default namespace injected
+    gpx.setAttribute("xmlns", NAMESPACE)
+    metadata = document.createElementNS(NAMESPACE, "metadata")
+    name_node = document.createElementNS(NAMESPACE, "name")
     name_node.appendChild(document.createTextNode(name))
     metadata.appendChild(name_node)
-    desc_node = document.createElement("desc")
+    desc_node = document.createElementNS(NAMESPACE, "desc")
     desc_node.appendChild(document.createTextNode(description))
     metadata.appendChild(desc_node)
     gpx.appendChild(metadata)
@@ -84,10 +89,10 @@ def build_waypoint_location(document, s):
     :returns: the ``<wpt>`` e,ement
     """
     assert s._name == 'GPWPL', f"Unexpected NMEA capture document {s}"
-    wpt = document.createElement("wpt")
-    wpt.setAttribute("lat", str(s.lat))
-    wpt.setAttribute("lon", str(s.lon))
-    name = document.createElement("name")
+    wpt = document.createElementNS(NAMESPACE, "wpt")
+    wpt.setAttribute("lat", str(round(s.latitude,4)))
+    wpt.setAttribute("lon", str(round(s.longitude,4)))
+    name = document.createElementNS(NAMESPACE, "name")
     name.appendChild(document.createTextNode(s.name))
     wpt.appendChild(name)
     return wpt
@@ -101,14 +106,14 @@ def build_routepoint(document, s, sym=None):
     :returns: the ``<rtept>`` e,ement    
     """
     assert s._name == 'GPWPL', f"Unexpected NMEA capture document {s}"
-    wpt = document.createElement("rtept")
-    wpt.setAttribute("lat", str(s.lat))
-    wpt.setAttribute("lon", str(s.lon))
-    name = document.createElement("name")
+    wpt = document.createElementNS(NAMESPACE, "rtept")
+    wpt.setAttribute("lat", str(round(s.latitude,4)))
+    wpt.setAttribute("lon", str(round(s.longitude,4)))
+    name = document.createElementNS(NAMESPACE, "name")
     name.appendChild(document.createTextNode(s.name))
     wpt.appendChild(name)
     if sym:
-        sym_tag = document.createElement("sym")
+        sym_tag = document.createElementNS(NAMESPACE, "sym")
         sym_tag.appendChild(document.createTextNode(sym))
         wpt.appendChild(sym_tag)
     return wpt
@@ -166,11 +171,11 @@ def route_to_gpx(sentences, name, description):
     document = impl.createDocument(None, None, None)
     gpx = build_gpx(document, name, description)
     
-    rte = document.createElement('rte')
-    name_node = document.createElement("name")
+    rte = document.createElementNS(NAMESPACE, 'rte')
+    name_node = document.createElementNS(NAMESPACE, "name")
     name_node.appendChild(document.createTextNode(", ".join(names)))
     rte.appendChild(name_node)
-    desc_node = document.createElement("desc")
+    desc_node = document.createElementNS(NAMESPACE, "desc")
     desc_node.appendChild(document.createTextNode(""))
     rte.appendChild(desc_node)
     gpx.appendChild(rte)

@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Merging &#8212; NMEA Tools 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="NMEA Tools 1.0 documentation" href="index.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Conversion" href="conversion.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="merging">
+<h1>Merging<a class="headerlink" href="#merging" title="Permalink to this headline">¶</a></h1>
+<p>A rather complex operation involves merging new waypoints
+into an existing chartplotters set of waypoints.</p>
+<p>The reason it&#8217;s interesting is the need to remove duplicates.</p>
+<p>Simple duplication by name is a potential problem. However,
+names are not really <strong>required</strong> to be globally unique.
+Because routes include copies of selected waypoints &#8211; chosen by location &#8211;
+there&#8217;s no reason for a name to be globally unique.</p>
+<p>The duplicates must be flagged by location. Two names for the
+same waypoint are more of a problem than two waypoints named &#8220;Fish Trap&#8221;.</p>
+<div class="section" id="data-model">
+<h2>Data Model<a class="headerlink" href="#data-model" title="Permalink to this headline">¶</a></h2>
+<p>There are two inputs:</p>
+<ul>
+<li><p class="first">An extract from the new chartplotter. This has some initial points,
+and some manually-entered points. These points should be preserved
+without (much) modification.</p>
+<p>The data is in GPX notation because that&#8217;s what the new chartplotter emits.</p>
+</li>
+<li><p class="first">The JSON capture from the legacy chartplotter. This can be transformed
+into GPX format so that it&#8217;s all consistent.</p>
+</li>
+</ul>
+<p>The merged data is a list of waypoints, in GPX. This is a new file, the
+merged waypoints to be uploaded to the new chartplotter to create happy boaters,
+and complete the user story.</p>
+<p>What about routes?</p>
+<p>They&#8217;re much easier to deal with. They tend to be much less volatile. A route
+modification is (actually) a relatively infrequent event. New routes are a big
+deal. Discussed separately.</p>
+</div>
+<div class="section" id="process">
+<h2>Process<a class="headerlink" href="#process" title="Permalink to this headline">¶</a></h2>
+<p>We have the legacy waypoints on a MicroSD card from the chartplotter.</p>
+<p>We have the new waypoints captured on a laptop computer.</p>
+<p>The default filenames are wired into the <code class="docutils literal"><span class="pre">waypoint_merge</span></code> application.
+It would be good to generalize this to work with other filenames.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">PYTHONPATH</span><span class="o">=.</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">nmeatools</span><span class="o">.</span><span class="n">waypoint_merge</span> <span class="o">&gt;</span><span class="n">merged_waypoints</span><span class="o">.</span><span class="n">gpx</span>
+</pre></div>
+</div>
+<p>The output is list of unique waypoints that are copied
+back to the MicroSD card for upload.</p>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span>MacBookPro-SLott:NMEA-Tools slott$ PYTHONPATH=. python3 -m nmeatools.waypoint_merge &gt;merged_waypoints.gpx
+INFO:merge:MASTER
+INFO:merge:UPDATE
+INFO:merge:CHES 59A near 0.0002 Chesapeake 59A
+INFO:merge:GWICO 1 near 0.0002 Great Wicomico 1
+INFO:merge:GWICO 2 near 0.0002 Great Wicomico Light
+...
+</pre></div>
+</div>
+<p>This shows waypoints in the update file with names like <code class="docutils literal"><span class="pre">'CHES</span> <span class="pre">59A'</span></code>
+which are very close to existing waypoints with names like <code class="docutils literal"><span class="pre">'Chesapeake</span> <span class="pre">59A'</span></code>.
+The distance of 0.0002 NM is about 1 foot.</p>
+<p>The practical threshold for GPS without careful correction
+is 25.6ft, about 7.8m, 95% of the time. We use a wider factor of about 32ft (about 9.7m)
+to determine that two waypoints appear to be the same.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Merging</a><ul>
+<li><a class="reference internal" href="#data-model">Data Model</a></li>
+<li><a class="reference internal" href="#process">Process</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="conversion.html" title="previous chapter">Conversion</a></li>
+      <li>Next: <a href="api.html" title="next chapter">API</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/merging.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, S.Lott.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/merging.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

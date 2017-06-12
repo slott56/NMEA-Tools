@@ -54,8 +54,10 @@ and the chartplotter producing the data.
 
 """
 
-from nmeatools.nmea_data import Sentence_Factory, Scanner, Encoder
+from nmeatools.nmea_data_eager import Sentence_Factory, Encoder
+from nmeatools.nmea_device import Listener
 from nmeatools.common import logged, Logging
+
 import argparse
 import sys
 from pathlib import Path
@@ -69,7 +71,7 @@ def sentence_iter(options):
     """
     Filtered reader of sentnces. Rejects any sentences from the background list.
     
-    Currently, the list is::
+    Currently, the reject list is::
     
         ('GPRMC', 'GPGGA', 'GPGLL', 'GPGSA', 'GPGSV', 'GPVTG', 'GPZDA', 'GPXTE')
      
@@ -88,7 +90,7 @@ def sentence_iter(options):
         timeout=options.timeout)
     sentence_factory= Sentence_Factory()
     try:
-        with Scanner(device) as plotter:
+        with Listener(device) as plotter:
             for sentence_fields in plotter:
                 sentence= sentence_factory(*sentence_fields)
                 if sentence._name in background:

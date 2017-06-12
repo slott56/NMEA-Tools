@@ -47,12 +47,14 @@
 
 <div class="genindex-jumpbox">
  <a href="#Symbols"><strong>Symbols</strong></a>
+ | <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
@@ -155,6 +157,16 @@
   </dl></td>
 </tr></table>
 
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api.html#nmeatools.waypoint_merge.Waypoint.args">args (nmeatools.waypoint_merge.Waypoint attribute)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
@@ -183,7 +195,7 @@
   </dt>
 
       
-  <dt><a href="api.html#nmeatools.nmea_data.Field.conversion">conversion (nmeatools.nmea_data.Field attribute)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Field.conversion">conversion (nmeatools.nmea_data_eager.Field attribute)</a>
   </dt>
 
   </dl></td>
@@ -203,13 +215,21 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.Decoder">Decoder (class in nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.decode">decode() (in module nmeatools.nmea_data_lazy)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Decoder">Decoder (class in nmeatools.nmea_data_eager)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.Encoder.default">default() (nmeatools.nmea_data.Encoder method)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Encoder.default">default() (nmeatools.nmea_data_eager.Encoder method)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.waypoint_merge.Waypoint.distance">distance() (nmeatools.waypoint_merge.Waypoint method)</a>
   </dt>
 
   </dl></td>
@@ -219,7 +239,7 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.Encoder">Encoder (class in nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Encoder">Encoder (class in nmeatools.nmea_data_eager)</a>
   </dt>
 
   </dl></td>
@@ -242,55 +262,67 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.Field">Field (class in nmeatools.nmea_data)</a>
-  </dt>
-
-      
-  <dt><a href="api.html#nmeatools.nmea_data.GPGGA.fields">fields (nmeatools.nmea_data.GPGGA attribute)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Field">Field (class in nmeatools.nmea_data_eager)</a>
   </dt>
 
       <dd><dl>
         
-  <dt><a href="api.html#nmeatools.nmea_data.GPGLL.fields">(nmeatools.nmea_data.GPGLL attribute)</a>
-  </dt>
-
-        
-  <dt><a href="api.html#nmeatools.nmea_data.GPGSA.fields">(nmeatools.nmea_data.GPGSA attribute)</a>
-  </dt>
-
-        
-  <dt><a href="api.html#nmeatools.nmea_data.GPGSV.fields">(nmeatools.nmea_data.GPGSV attribute)</a>
-  </dt>
-
-        
-  <dt><a href="api.html#nmeatools.nmea_data.GPRMC.fields">(nmeatools.nmea_data.GPRMC attribute)</a>
-  </dt>
-
-        
-  <dt><a href="api.html#nmeatools.nmea_data.GPRTE.fields">(nmeatools.nmea_data.GPRTE attribute)</a>
-  </dt>
-
-        
-  <dt><a href="api.html#nmeatools.nmea_data.GPVTG.fields">(nmeatools.nmea_data.GPVTG attribute)</a>
-  </dt>
-
-        
-  <dt><a href="api.html#nmeatools.nmea_data.GPWPL.fields">(nmeatools.nmea_data.GPWPL attribute)</a>
-  </dt>
-
-        
-  <dt><a href="api.html#nmeatools.nmea_data.GPXTE.fields">(nmeatools.nmea_data.GPXTE attribute)</a>
-  </dt>
-
-        
-  <dt><a href="api.html#nmeatools.nmea_data.GPZDA.fields">(nmeatools.nmea_data.GPZDA attribute)</a>
-  </dt>
-
-        
-  <dt><a href="api.html#nmeatools.nmea_data.Sentence.fields">(nmeatools.nmea_data.Sentence attribute)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Field">(class in nmeatools.nmea_data_lazy)</a>
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPGGA.fields">fields (nmeatools.nmea_data_eager.GPGGA attribute)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPGLL.fields">(nmeatools.nmea_data_eager.GPGLL attribute)</a>
+  </dt>
+
+        
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPGSA.fields">(nmeatools.nmea_data_eager.GPGSA attribute)</a>
+  </dt>
+
+        
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPGSV.fields">(nmeatools.nmea_data_eager.GPGSV attribute)</a>
+  </dt>
+
+        
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPRMC.fields">(nmeatools.nmea_data_eager.GPRMC attribute)</a>
+  </dt>
+
+        
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPRTE.fields">(nmeatools.nmea_data_eager.GPRTE attribute)</a>
+  </dt>
+
+        
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPVTG.fields">(nmeatools.nmea_data_eager.GPVTG attribute)</a>
+  </dt>
+
+        
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPWPL.fields">(nmeatools.nmea_data_eager.GPWPL attribute)</a>
+  </dt>
+
+        
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPXTE.fields">(nmeatools.nmea_data_eager.GPXTE attribute)</a>
+  </dt>
+
+        
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPZDA.fields">(nmeatools.nmea_data_eager.GPZDA attribute)</a>
+  </dt>
+
+        
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Sentence.fields">(nmeatools.nmea_data_eager.Sentence attribute)</a>
+  </dt>
+
+      </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Float">Float (class in nmeatools.nmea_data_lazy)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
@@ -308,45 +340,67 @@
 
       </dl></dd>
       
-  <dt><a href="api.html#nmeatools.nmea_data.GPGGA">GPGGA (class in nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPGGA">GPGGA (class in nmeatools.nmea_data_eager)</a>
   </dt>
 
       
-  <dt><a href="api.html#nmeatools.nmea_data.GPGLL">GPGLL (class in nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPGLL">GPGLL (class in nmeatools.nmea_data_eager)</a>
   </dt>
 
       
-  <dt><a href="api.html#nmeatools.nmea_data.GPGSA">GPGSA (class in nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPGSA">GPGSA (class in nmeatools.nmea_data_eager)</a>
   </dt>
 
       
-  <dt><a href="api.html#nmeatools.nmea_data.GPGSV">GPGSV (class in nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPGSV">GPGSV (class in nmeatools.nmea_data_eager)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPRMC">GPRMC (class in nmeatools.nmea_data_eager)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.GPRMC">GPRMC (class in nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPRTE">GPRTE (class in nmeatools.nmea_data_eager)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPRTE">(class in nmeatools.nmea_data_lazy)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPVTG">GPVTG (class in nmeatools.nmea_data_eager)</a>
   </dt>
 
       
-  <dt><a href="api.html#nmeatools.nmea_data.GPRTE">GPRTE (class in nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPWPL">GPWPL (class in nmeatools.nmea_data_eager)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPWPL">(class in nmeatools.nmea_data_lazy)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPXTE">GPXTE (class in nmeatools.nmea_data_eager)</a>
   </dt>
 
       
-  <dt><a href="api.html#nmeatools.nmea_data.GPVTG">GPVTG (class in nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.GPZDA">GPZDA (class in nmeatools.nmea_data_eager)</a>
   </dt>
 
-      
-  <dt><a href="api.html#nmeatools.nmea_data.GPWPL">GPWPL (class in nmeatools.nmea_data)</a>
-  </dt>
+  </dl></td>
+</tr></table>
 
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.GPXTE">GPXTE (class in nmeatools.nmea_data)</a>
-  </dt>
-
-      
-  <dt><a href="api.html#nmeatools.nmea_data.GPZDA">GPZDA (class in nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.haversine.haversine">haversine() (in module nmeatools.haversine)</a>
   </dt>
 
   </dl></td>
@@ -355,6 +409,10 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPRTE.id">id (nmeatools.nmea_data_lazy.GPRTE attribute)</a>
+  </dt>
+
       
   <dt>
     input
@@ -371,41 +429,131 @@
 
       </dl></dd>
   </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Integer">Integer (class in nmeatools.nmea_data_lazy)</a>
+  </dt>
+
+  </dl></td>
 </tr></table>
 
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.lat">lat() (in module nmeatools.nmea_data)</a>
-  </dt>
-
-      
-  <dt><a href="api.html#nmeatools.nmea_data.Encoder.log">log (nmeatools.nmea_data.Encoder attribute)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.lat">lat() (in module nmeatools.nmea_data_eager)</a>
   </dt>
 
       <dd><dl>
         
-  <dt><a href="api.html#nmeatools.nmea_data.Scanner.log">(nmeatools.nmea_data.Scanner attribute)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.LatAngle.lat">(nmeatools.nmea_data_lazy.LatAngle static method)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPWPL.lat_angle">lat_angle (nmeatools.nmea_data_lazy.GPWPL attribute)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPWPL.lat_h">lat_h (nmeatools.nmea_data_lazy.GPWPL attribute)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.LatAngle">LatAngle (class in nmeatools.nmea_data_lazy)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Latitude">Latitude (class in nmeatools.nmea_data_lazy)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPWPL.latitude">latitude (nmeatools.nmea_data_lazy.GPWPL attribute)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPRTE.length">length (nmeatools.nmea_data_lazy.GPRTE attribute)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_device.Listener">Listener (class in nmeatools.nmea_device)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Encoder.log">log (nmeatools.nmea_data_eager.Encoder attribute)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Sentence.log">(nmeatools.nmea_data_eager.Sentence attribute)</a>
   </dt>
 
         
-  <dt><a href="api.html#nmeatools.nmea_data.Sentence.log">(nmeatools.nmea_data.Sentence attribute)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Sentence_Factory.log">(nmeatools.nmea_data_eager.Sentence_Factory attribute)</a>
   </dt>
 
         
-  <dt><a href="api.html#nmeatools.nmea_data.Sentence_Factory.log">(nmeatools.nmea_data.Sentence_Factory attribute)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.UnknownSentence.log">(nmeatools.nmea_data_eager.UnknownSentence attribute)</a>
   </dt>
 
         
-  <dt><a href="api.html#nmeatools.nmea_data.UnknownSentence.log">(nmeatools.nmea_data.UnknownSentence attribute)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Sentence.log">(nmeatools.nmea_data_lazy.Sentence attribute)</a>
+  </dt>
+
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Sentence_Factory.log">(nmeatools.nmea_data_lazy.Sentence_Factory attribute)</a>
+  </dt>
+
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.UnknownSentence.log">(nmeatools.nmea_data_lazy.UnknownSentence attribute)</a>
+  </dt>
+
+        
+  <dt><a href="api.html#nmeatools.nmea_device.Listener.log">(nmeatools.nmea_device.Listener attribute)</a>
+  </dt>
+
+        
+  <dt><a href="api.html#nmeatools.waypoint_merge.Waypoint.log">(nmeatools.waypoint_merge.Waypoint attribute)</a>
   </dt>
 
       </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.lon">lon() (in module nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.common.logged">logged() (in module nmeatools.common)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.common.Logging">Logging (class in nmeatools.common)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_eager.lon">lon() (in module nmeatools.nmea_data_eager)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.LonAngle.lon">(nmeatools.nmea_data_lazy.LonAngle static method)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPWPL.lon_angle">lon_angle (nmeatools.nmea_data_lazy.GPWPL attribute)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPWPL.lon_h">lon_h (nmeatools.nmea_data_lazy.GPWPL attribute)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.LonAngle">LonAngle (class in nmeatools.nmea_data_lazy)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Longitude">Longitude (class in nmeatools.nmea_data_lazy)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPWPL.longitude">longitude (nmeatools.nmea_data_lazy.GPWPL attribute)</a>
   </dt>
 
   </dl></td>
@@ -425,21 +573,49 @@
 
       </dl></dd>
   </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api.html#nmeatools.waypoint_merge.merge">merge() (in module nmeatools.waypoint_merge)</a>
+  </dt>
+
+  </dl></td>
 </tr></table>
 
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.Field.name">name (nmeatools.nmea_data.Field attribute)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Field.name">name (nmeatools.nmea_data_eager.Field attribute)</a>
   </dt>
 
-      
-  <dt><a href="api.html#nmeatools.nmea_data.nfloat">nfloat() (in module nmeatools.nmea_data)</a>
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPWPL.name">(nmeatools.nmea_data_lazy.GPWPL attribute)</a>
   </dt>
 
+      </dl></dd>
       
-  <dt><a href="api.html#nmeatools.nmea_data.nint">nint() (in module nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.nfloat">nfloat() (in module nmeatools.nmea_data_eager)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Float.nfloat">(nmeatools.nmea_data_lazy.Float static method)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="api.html#nmeatools.nmea_data_eager.nint">nint() (in module nmeatools.nmea_data_eager)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Integer.nint">(nmeatools.nmea_data_lazy.Integer static method)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="api.html#nmeatools.haversine.nm_haversine">nm_haversine() (in module nmeatools.haversine)</a>
   </dt>
 
       
@@ -472,7 +648,15 @@
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.Decoder.nmea_object_hook">nmea_object_hook() (nmeatools.nmea_data.Decoder method)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Decoder.nmea_object_hook">nmea_object_hook() (nmeatools.nmea_data_eager.Decoder method)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#module-nmeatools.common">nmeatools.common (module)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#module-nmeatools.haversine">nmeatools.haversine (module)</a>
   </dt>
 
       
@@ -480,7 +664,19 @@
   </dt>
 
       
-  <dt><a href="api.html#module-nmeatools.nmea_data">nmeatools.nmea_data (module)</a>
+  <dt><a href="api.html#module-nmeatools.nmea_data_eager">nmeatools.nmea_data_eager (module)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#module-nmeatools.nmea_data_lazy">nmeatools.nmea_data_lazy (module)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#module-nmeatools.nmea_device">nmeatools.nmea_device (module)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#module-nmeatools.waypoint_merge">nmeatools.waypoint_merge (module)</a>
   </dt>
 
       
@@ -514,33 +710,49 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.sample_CP">sample_CP() (in module nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.sample_CP">sample_CP() (in module nmeatools.nmea_data_eager)</a>
   </dt>
 
       
-  <dt><a href="api.html#nmeatools.nmea_data.sample_GPS">sample_GPS() (in module nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.sample_GPS">sample_GPS() (in module nmeatools.nmea_data_eager)</a>
   </dt>
 
       
-  <dt><a href="api.html#nmeatools.nmea_data.Scanner">Scanner (class in nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Sentence">Sentence (class in nmeatools.nmea_data_eager)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Sentence">(class in nmeatools.nmea_data_lazy)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPRTE.sentence">sentence (nmeatools.nmea_data_lazy.GPRTE attribute)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.Sentence">Sentence (class in nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Sentence_Factory.sentence_class_map">sentence_class_map (nmeatools.nmea_data_eager.Sentence_Factory attribute)</a>
   </dt>
 
       
-  <dt><a href="api.html#nmeatools.nmea_data.Sentence_Factory.sentence_class_map">sentence_class_map (nmeatools.nmea_data.Sentence_Factory attribute)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Sentence_Factory">Sentence_Factory (class in nmeatools.nmea_data_eager)</a>
   </dt>
 
-      
-  <dt><a href="api.html#nmeatools.nmea_data.Sentence_Factory">Sentence_Factory (class in nmeatools.nmea_data)</a>
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Sentence_Factory">(class in nmeatools.nmea_data_lazy)</a>
   </dt>
 
+      </dl></dd>
       
   <dt><a href="api.html#nmeatools.nmea_capture.sentence_iter">sentence_iter() (in module nmeatools.nmea_capture)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPRTE.status">status (nmeatools.nmea_data_lazy.GPRTE attribute)</a>
   </dt>
 
   </dl></td>
@@ -550,13 +762,31 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.text">text() (in module nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Text">Text (class in nmeatools.nmea_data_lazy)</a>
   </dt>
 
+      
+  <dt><a href="api.html#nmeatools.nmea_data_eager.text">text() (in module nmeatools.nmea_data_eager)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Text.text">(nmeatools.nmea_data_lazy.Text static method)</a>
+  </dt>
+
+      </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.Field.title">title (nmeatools.nmea_data.Field attribute)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.Field.title">title (nmeatools.nmea_data_eager.Field attribute)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Sentence.to_json">to_json (nmeatools.nmea_data_lazy.Sentence attribute)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.Field.transform">transform() (nmeatools.nmea_data_lazy.Field static method)</a>
   </dt>
 
   </dl></td>
@@ -566,19 +796,45 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.UnknownSentence">UnknownSentence (class in nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.UnknownSentence">UnknownSentence (class in nmeatools.nmea_data_eager)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.UnknownSentence">(class in nmeatools.nmea_data_lazy)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.UTC_Date">UTC_Date (class in nmeatools.nmea_data_lazy)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.nmea_data_eager.utc_date">utc_date() (in module nmeatools.nmea_data_eager)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.UTC_Date.utc_date">(nmeatools.nmea_data_lazy.UTC_Date static method)</a>
+  </dt>
+
+      </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.utc_date">utc_date() (in module nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.UTC_Time">UTC_Time (class in nmeatools.nmea_data_lazy)</a>
   </dt>
 
       
-  <dt><a href="api.html#nmeatools.nmea_data.utc_time">utc_time() (in module nmeatools.nmea_data)</a>
+  <dt><a href="api.html#nmeatools.nmea_data_eager.utc_time">utc_time() (in module nmeatools.nmea_data_eager)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.UTC_Time.utc_time">(nmeatools.nmea_data_lazy.UTC_Time static method)</a>
+  </dt>
+
+      </dl></dd>
   </dl></td>
 </tr></table>
 
@@ -586,7 +842,7 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#nmeatools.nmea_data.Scanner.validate">validate() (nmeatools.nmea_data.Scanner static method)</a>
+  <dt><a href="api.html#nmeatools.nmea_device.Listener.validate">validate() (nmeatools.nmea_device.Listener static method)</a>
   </dt>
 
   </dl></td>
@@ -595,6 +851,14 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api.html#nmeatools.waypoint_merge.Waypoint">Waypoint (class in nmeatools.waypoint_merge)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#nmeatools.waypoint_merge.waypoint_iter">waypoint_iter() (in module nmeatools.waypoint_merge)</a>
+  </dt>
+
       
   <dt>
     waypoint_to_gpx command line option
@@ -624,6 +888,10 @@
       </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api.html#nmeatools.nmea_data_lazy.GPRTE.waypoints">waypoints (nmeatools.nmea_data_lazy.GPRTE attribute)</a>
+  </dt>
+
       
   <dt><a href="api.html#nmeatools.waypoint_to_gpx.waypoints_to_gpx">waypoints_to_gpx() (in module nmeatools.waypoint_to_gpx)</a>
   </dt>

@@ -61,21 +61,21 @@ of waypoints is relatively rare, manually stopping data collection seems simples
 <p>The <code class="xref py py-class docutils literal"><span class="pre">nmea_data.Sentence</span></code> class defines the essential features of Sentence.</p>
 <p>There are a number of subclasses, for a few of the NMEA sentences.</p>
 <ul class="simple">
-<li><a class="reference internal" href="api.html#nmeatools.nmea_data.UnknownSentence" title="nmeatools.nmea_data.UnknownSentence"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.UnknownSentence</span></code></a></li>
-<li><a class="reference internal" href="api.html#nmeatools.nmea_data.GPRMC" title="nmeatools.nmea_data.GPRMC"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPRMC</span></code></a></li>
-<li><a class="reference internal" href="api.html#nmeatools.nmea_data.GPGGA" title="nmeatools.nmea_data.GPGGA"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPGGA</span></code></a></li>
-<li><a class="reference internal" href="api.html#nmeatools.nmea_data.GPGLL" title="nmeatools.nmea_data.GPGLL"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPGLL</span></code></a></li>
-<li><a class="reference internal" href="api.html#nmeatools.nmea_data.GPGSA" title="nmeatools.nmea_data.GPGSA"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPGSA</span></code></a></li>
-<li><a class="reference internal" href="api.html#nmeatools.nmea_data.GPGSV" title="nmeatools.nmea_data.GPGSV"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPGSV</span></code></a></li>
-<li><a class="reference internal" href="api.html#nmeatools.nmea_data.GPVTG" title="nmeatools.nmea_data.GPVTG"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPVTG</span></code></a></li>
-<li><a class="reference internal" href="api.html#nmeatools.nmea_data.GPZDA" title="nmeatools.nmea_data.GPZDA"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPZDA</span></code></a></li>
-<li><a class="reference internal" href="api.html#nmeatools.nmea_data.GPXTE" title="nmeatools.nmea_data.GPXTE"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPXTE</span></code></a></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.UnknownSentence</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPRMC</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPGGA</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPGLL</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPGSA</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPGSV</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPVTG</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPZDA</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPXTE</span></code></li>
 </ul>
 <p>The following two are what we&#8217;re interested in.</p>
 <ul class="simple">
-<li><a class="reference internal" href="api.html#nmeatools.nmea_data.GPWPL" title="nmeatools.nmea_data.GPWPL"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPWPL</span></code></a>. This is the waypoint location. The NMEA sentence
+<li><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPWPL</span></code>. This is the waypoint location. The NMEA sentence
 has three interesting attributes: latitude, longitude, and name.</li>
-<li><a class="reference internal" href="api.html#nmeatools.nmea_data.GPRTE" title="nmeatools.nmea_data.GPRTE"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPRTE</span></code></a>. This is the container for a route. The NMEA sentence
+<li><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPRTE</span></code>. This is the container for a route. The NMEA sentence
 is rather complex, because a route can contain a large number of waypoints.
 NMEA messages are kept short, and each sentence will list the names of a few
 waypoints. There&#8217;s a sequence number that can be used to maintain order

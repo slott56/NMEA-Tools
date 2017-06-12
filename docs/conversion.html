@@ -26,7 +26,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="NMEA Tools 1.0 documentation" href="index.html" />
-    <link rel="next" title="API" href="api.html" />
+    <link rel="next" title="Merging" href="merging.html" />
     <link rel="prev" title="Collecting NMEA Data" href="gathering.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -118,6 +118,9 @@ Zeus2 chart plotter are required.</p>
 <p>Each route contains duplicate copies of relevant waypoints. It looks like
 GPSNavX handles this by appending a suffix to the waypoint to distinguish
 duplicate copies.</p>
+<p>Note that the legacy chartplotter names are highly abbreviated, upper-case only.</p>
+<p>After conversion, it&#8217;s helpful to manually edit the GPX documents to write
+more informative waypoint and route names.</p>
 </div>
 <div class="section" id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
@@ -150,8 +153,10 @@ INFO:__main__:23 sentences read
 INFO:__main__:Writing /Users/slott/Documents/Sailing/Cruise History/routes/rt1.gpx
 </pre></div>
 </div>
-<p>Why are there extra waypoints that are not referenced in the route?</p>
+<p>Why are there extra waypoints in the waypoint list that are not referenced in the route?</p>
 <p>Your guess is as good as mine.</p>
+<p>The names like <code class="docutils literal"><span class="pre">&quot;DLTVL</span> <span class="pre">RDVL&quot;</span></code> need to be manually changed in the resulting
+GPX file to something like <code class="docutils literal"><span class="pre">&quot;Deltaville</span> <span class="pre">to</span> <span class="pre">Reedville&quot;</span></code>.</p>
 </div>
 </div>
 
@@ -180,7 +185,7 @@ INFO:__main__:Writing /Users/slott/Documents/Sailing/Cruise History/routes/rt1.g
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="gathering.html" title="previous chapter">Collecting NMEA Data</a></li>
-      <li>Next: <a href="api.html" title="next chapter">API</a></li>
+      <li>Next: <a href="merging.html" title="next chapter">Merging</a></li>
   </ul></li>
 </ul>
 </div>

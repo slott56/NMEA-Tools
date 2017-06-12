@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Python Module Index &#8212; NMEA Tools 1.0 documentation</title>
+    <title>Routes and Route Planning &#8212; NMEA Tools 1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,14 +26,11 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="NMEA Tools 1.0 documentation" href="index.html" />
-
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-
 
   </head>
   <body role="document">
@@ -44,64 +41,26 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-
-   <h1>Python Module Index</h1>
-
-   <div class="modindex-jumpbox">
-   <a href="#cap-n"><strong>n</strong></a>
-   </div>
-
-   <table class="indextable modindextable" cellspacing="0" cellpadding="2">
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-n"><td></td><td>
-       <strong>n</strong></td><td></td></tr>
-     <tr>
-       <td><img src="_static/minus.png" class="toggler"
-              id="toggle-1" style="display: none" alt="-" /></td>
-       <td>
-       <code class="xref">nmeatools</code></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="api.html#module-nmeatools.common"><code class="xref">nmeatools.common</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="api.html#module-nmeatools.haversine"><code class="xref">nmeatools.haversine</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="api.html#module-nmeatools.nmea_capture"><code class="xref">nmeatools.nmea_capture</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="api.html#module-nmeatools.nmea_data_eager"><code class="xref">nmeatools.nmea_data_eager</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="api.html#module-nmeatools.nmea_data_lazy"><code class="xref">nmeatools.nmea_data_lazy</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="api.html#module-nmeatools.nmea_device"><code class="xref">nmeatools.nmea_device</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="api.html#module-nmeatools.waypoint_merge"><code class="xref">nmeatools.waypoint_merge</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="api.html#module-nmeatools.waypoint_to_gpx"><code class="xref">nmeatools.waypoint_to_gpx</code></a></td><td>
-       <em></em></td></tr>
-   </table>
+  <div class="section" id="routes-and-route-planning">
+<h1>Routes and Route Planning<a class="headerlink" href="#routes-and-route-planning" title="Permalink to this headline">¶</a></h1>
+<p>This is a more complex consideration.</p>
+<p>There are three possible sources for routes, each with it&#8217;s own unique
+requirements.</p>
+<ul class="simple">
+<li>Some routes are more complex and a planned on the laptop using GPSNavX.
+The resulting GPX document can be shared with the new chartplotter
+via  MicroSD card.
+NMEA data must be pushed to the old chartplotter through the NMEA interface.</li>
+<li>Some routes are planned &#8220;on-the-fly&#8221; using the chartplotter.
+The GPX can be exported to a MicroSD card.
+NMEA data can be pushed to the old chartplotter through the NMEA interface.</li>
+<li>It&#8217;s remotely possible to plan a route on the legacy chartplotter.
+It has a good UX for route planning, and it&#8217;s very rugged and reliable.
+In this case, the laptop must still be used to capture the route
+and share it.</li>
+</ul>
+<p>The NMEA push is not (currently) part of the <a class="reference internal" href="api.html#module-nmeatools.nmea_device" title="nmeatools.nmea_device"><code class="xref py py-mod docutils literal"><span class="pre">nmeatools.nmea_device</span></code></a> module.</p>
+</div>
 
 
           </div>
@@ -115,6 +74,13 @@
   </ul></li>
 </ul>
 </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/routes.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -136,6 +102,9 @@
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.9</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
+      |
+      <a href="_sources/routes.txt"
+          rel="nofollow">Page source</a>
     </div>
 
     

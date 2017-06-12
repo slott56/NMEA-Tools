@@ -26,7 +26,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="NMEA Tools 1.0 documentation" href="index.html" />
-    <link rel="prev" title="Conversion" href="conversion.html" />
+    <link rel="prev" title="Merging" href="merging.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -44,534 +44,94 @@
             
   <div class="section" id="api">
 <h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-nmeatools.nmea_data">
-<span id="nmea-data"></span><h2>nmea_data<a class="headerlink" href="#module-nmeatools.nmea_data" title="Permalink to this headline">¶</a></h2>
-<p>Read NMEA messages via a NMEA to USB interface.
-This includes GPS antennas like BU-353 and Standard Horizon CP300i Chart Plotter.</p>
-<p>Here&#8217;s an example of NMEA 0183 to USB hardware.</p>
-<p><a class="reference external" href="http://www.digitalyachtamerica.com/index.php/en/products/interfacing/nmeausb/product/67-usb-to-nmea-adaptor">http://www.digitalyachtamerica.com/index.php/en/products/interfacing/nmeausb/product/67-usb-to-nmea-adaptor</a></p>
-<p>PySerial is required. Using PySerial 3.3.
-<a class="reference external" href="https://pypi.python.org/pypi/pyserial">https://pypi.python.org/pypi/pyserial</a></p>
-<p>Typical interface to NMEA 0183 requires this kind of serial interface:</p>
-<ul class="simple">
-<li>Typical Baud rate   4800</li>
-<li>Data bits   8</li>
-<li>Parity      None</li>
-<li>Stop bits   1</li>
-<li>Handshake   None</li>
-</ul>
-<p>We&#8217;ll decode NMEA 0183 Sentences. See <a class="reference external" href="http://www.robosoft.info/en/technologies/knowledgebase/nmea0183">http://www.robosoft.info/en/technologies/knowledgebase/nmea0183</a></p>
-<p>The checksum is the bitwise exclusive OR of ASCII codes of all characters between the $ and *.
-This is done with <code class="docutils literal"><span class="pre">reduce(operator.xor,</span> <span class="pre">bytes)</span></code></p>
-<p>See <a class="reference external" href="http://en.wikipedia.org/wiki/NMEA_0183">http://en.wikipedia.org/wiki/NMEA_0183</a></p>
-<p>See <a class="reference external" href="http://www.gpsinformation.org/dale/nmea.htm#nmea">http://www.gpsinformation.org/dale/nmea.htm#nmea</a></p>
-<p>See <a class="reference external" href="http://freenmea.net/docs">http://freenmea.net/docs</a></p>
-<p>Messages that are captured and (to an extent) parsed.</p>
-<ul class="simple">
-<li>$GPRMC - Recommended Minimum Specific GPS/TRANSIT Data</li>
-<li>$GPGGA - Global Positioning System Fix Data</li>
-<li>$GPGLL - Geographic position, latitude / longitude</li>
-<li>$GPGSA - GPS DOP and active satellites</li>
-<li>$GPGSV - GPS Satellites in view</li>
-<li>$GPVTG - Track made good and ground speed</li>
-<li>$GPZDA - Date &amp; Time</li>
-<li>$GPXTE - Cross-track error, Measured</li>
-<li>$GPWPL - Waypoint (example: b&#8216;3845.363&#8217;, b&#8217;N&#8217;, b&#8216;07629.551&#8217;, b&#8217;W&#8217;, b&#8217;FISHTRP&#8217;)</li>
-<li>$GPRTE - Route</li>
-</ul>
-<p>These are not (currently) interpreted.</p>
-<ul class="simple">
-<li>$GPDBT - Depth Below Transducer</li>
-<li>$GPDPT - Depth</li>
-<li>$GPMTW - Water Temperature</li>
-<li>$GPVHW - Water Speed and Heading</li>
-</ul>
-<div class="section" id="unit-test">
-<h3>Unit Test<a class="headerlink" href="#unit-test" title="Permalink to this headline">¶</a></h3>
-<p>Note the subtle complexity of passing end-of-line in a string to doctest.
-We can&#8217;t simply use ``
-`` in a sample input string, or the compiler being
-used by doctest gets confused.</p>
-<p>Good Messages:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m0</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPRMC,162823.000,A,2542.9243,N,08013.6310,W,0.14,59.53,180214,,*2F</span>
-<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m1</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPVTG,59.53,T,,M,0.14,N,0.3,K*5C</span>
-<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m2</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPGGA,162824.000,2542.9243,N,08013.6311,W,1,06,1.5,3.3,M,-27.3,M,,0000*6E</span>
-<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m3</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPGLL,2542.9243,N,08013.6310,W,162823.000,A*29</span>
-<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m4</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPGSA,A,3,29,24,18,14,22,27,,,,,,,2.9,1.5,2.5*3E</span>
-<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m5</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPGSV,3,1,10,21,82,249,18,24,54,090,37,18,52,343,33,15,32,039,34*7D</span>
-<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m6</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPGSV,3,2,10,14,28,244,36,22,27,307,33,29,12,190,32,06,10,293,28*74</span>
-<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m7</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPGSV,3,3,10,27,08,303,27,12,00,139,25*7F</span>
-<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Scanner</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m0</span><span class="p">)</span>
-<span class="go">(b&#39;GPRMC&#39;, b&#39;162823.000&#39;, b&#39;A&#39;, b&#39;2542.9243&#39;, b&#39;N&#39;, b&#39;08013.6310&#39;, b&#39;W&#39;, b&#39;0.14&#39;, b&#39;59.53&#39;, b&#39;180214&#39;, b&#39;&#39;, b&#39;&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Scanner</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span>
-<span class="go">(b&#39;GPVTG&#39;, b&#39;59.53&#39;, b&#39;T&#39;, b&#39;&#39;, b&#39;M&#39;, b&#39;0.14&#39;, b&#39;N&#39;, b&#39;0.3&#39;, b&#39;K&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Scanner</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span>
-<span class="go">(b&#39;GPGGA&#39;, b&#39;162824.000&#39;, b&#39;2542.9243&#39;, b&#39;N&#39;, b&#39;08013.6311&#39;, b&#39;W&#39;, b&#39;1&#39;, b&#39;06&#39;, b&#39;1.5&#39;, b&#39;3.3&#39;, b&#39;M&#39;, b&#39;-27.3&#39;, b&#39;M&#39;, b&#39;&#39;, b&#39;0000&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Scanner</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m4</span><span class="p">)</span>
-<span class="go">(b&#39;GPGSA&#39;, b&#39;A&#39;, b&#39;3&#39;, b&#39;29&#39;, b&#39;24&#39;, b&#39;18&#39;, b&#39;14&#39;, b&#39;22&#39;, b&#39;27&#39;, b&#39;&#39;, b&#39;&#39;, b&#39;&#39;, b&#39;&#39;, b&#39;&#39;, b&#39;&#39;, b&#39;2.9&#39;, b&#39;1.5&#39;, b&#39;2.5&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Scanner</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m5</span><span class="p">)</span>
-<span class="go">(b&#39;GPGSV&#39;, b&#39;3&#39;, b&#39;1&#39;, b&#39;10&#39;, b&#39;21&#39;, b&#39;82&#39;, b&#39;249&#39;, b&#39;18&#39;, b&#39;24&#39;, b&#39;54&#39;, b&#39;090&#39;, b&#39;37&#39;, b&#39;18&#39;, b&#39;52&#39;, b&#39;343&#39;, b&#39;33&#39;, b&#39;15&#39;, b&#39;32&#39;, b&#39;039&#39;, b&#39;34&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Scanner</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m6</span><span class="p">)</span>
-<span class="go">(b&#39;GPGSV&#39;, b&#39;3&#39;, b&#39;2&#39;, b&#39;10&#39;, b&#39;14&#39;, b&#39;28&#39;, b&#39;244&#39;, b&#39;36&#39;, b&#39;22&#39;, b&#39;27&#39;, b&#39;307&#39;, b&#39;33&#39;, b&#39;29&#39;, b&#39;12&#39;, b&#39;190&#39;, b&#39;32&#39;, b&#39;06&#39;, b&#39;10&#39;, b&#39;293&#39;, b&#39;28&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Scanner</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m7</span><span class="p">)</span>
-<span class="go">(b&#39;GPGSV&#39;, b&#39;3&#39;, b&#39;3&#39;, b&#39;10&#39;, b&#39;27&#39;, b&#39;08&#39;, b&#39;303&#39;, b&#39;27&#39;, b&#39;12&#39;, b&#39;00&#39;, b&#39;139&#39;, b&#39;25&#39;)</span>
+<div class="section" id="module-nmeatools.common">
+<span id="common"></span><h2>common<a class="headerlink" href="#module-nmeatools.common" title="Permalink to this headline">¶</a></h2>
+<p>Some common framework things.</p>
+<dl class="function">
+<dt id="nmeatools.common.logged">
+<code class="descclassname">nmeatools.common.</code><code class="descname">logged</code><span class="sig-paren">(</span><em>class_</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.common.logged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class-level decorator to insert logging.</p>
+<p>This assures that a class has a <code class="docutils literal"><span class="pre">.log</span></code> member.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nd">@logged</span>
+<span class="k">class</span> <span class="nc">Something</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;init with </span><span class="si">{args}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Broken Message, typical case:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b0</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;42.9243,N,08013.6310,W,0.14,59.53,180214,,*2F</span>
-<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">=</span> <span class="n">Scanner</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">b0</span><span class="p">)</span>  
-<span class="gt">Traceback (most recent call last):</span>
-  File <span class="nb">&quot;/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/doctest.py&quot;</span>, line <span class="m">1330</span>, in <span class="n">__run</span>
-    <span class="n">compileflags</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">test</span><span class="o">.</span><span class="n">globs</span><span class="p">)</span>
-  File <span class="nb">&quot;&lt;doctest __main__[16]&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
-    <span class="n">x</span><span class="o">=</span> <span class="n">Scanner</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">b0</span><span class="p">)</span>
-  File <span class="nb">&quot;gps_spike.py&quot;</span>, line <span class="m">143</span>, in <span class="n">validate</span>
-    <span class="k">assert</span> <span class="n">sentence_bytes</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;$&#39;</span><span class="p">),</span> <span class="s2">&quot;Sentence Fragment&quot;</span>
-<span class="gr">AssertionError</span>: <span class="n">Sentence Fragment</span>
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.common.Logging">
+<em class="property">class </em><code class="descclassname">nmeatools.common.</code><code class="descname">Logging</code><span class="sig-paren">(</span><em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.common.Logging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logging context manager.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Logging</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">):</span>
+    <span class="n">do</span> <span class="n">the</span> <span class="n">work</span><span class="o">.</span>
 </pre></div>
 </div>
-<dl class="class">
-<dt id="nmeatools.nmea_data.Decoder">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">Decoder</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.Decoder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decode a sentence from JSON notation. This re-applies the class definition,
-computing and derived values from the original bytes.</p>
-<p>Note that the JSON document doesn&#8217;t <strong>really</strong> work in bytes. We had two
-choices: base64 encode the original bytes, or trust that the bytes were only
-a subset of printable ASCII characters that overlap with UTF-8.</p>
-<p>We chose the latter approach. The input is text, which overlaps with ASCII.
-We need to encode it into ASCII to recover the bytes. These are then passed
-to the <a class="reference internal" href="#nmeatools.nmea_data.Sentence_Factory" title="nmeatools.nmea_data.Sentence_Factory"><code class="xref py py-class docutils literal"><span class="pre">Sentence_Factory</span></code></a> to recover <a class="reference internal" href="#nmeatools.nmea_data.Sentence" title="nmeatools.nmea_data.Sentence"><code class="xref py py-class docutils literal"><span class="pre">Sentence</span></code></a> instances.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">object</span> <span class="o">=</span> <span class="n">GPWPL</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;GPWPL&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;5128.62&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;N&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;00027.58&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;W&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;EGLL&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">object</span>
-<span class="go">GPWPL 51°28.62′N 0°27.58′W EGLL</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="n">Encoder</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">new_object</span> <span class="o">=</span> <span class="n">Decoder</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">new_object</span>
-<span class="go">GPWPL 51°28.62′N 0°27.58′W EGLL</span>
-</pre></div>
+<p>This guarantees that <code class="docutils literal"><span class="pre">logging.shutdown()</span></code> is run on exit.</p>
+</dd></dl>
+
 </div>
-<dl class="method">
-<dt id="nmeatools.nmea_data.Decoder.nmea_object_hook">
-<code class="descname">nmea_object_hook</code><span class="sig-paren">(</span><em>as_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.Decoder.nmea_object_hook" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.Encoder">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">Encoder</code><span class="sig-paren">(</span><em>*</em>, <em>skipkeys=False</em>, <em>ensure_ascii=True</em>, <em>check_circular=True</em>, <em>allow_nan=True</em>, <em>sort_keys=False</em>, <em>indent=None</em>, <em>separators=None</em>, <em>default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.Encoder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Encode the sentence into JSON. This dumps the raw <code class="docutils literal"><span class="pre">_args</span></code> value, 
-ignoring all derived values.  This allows a change to the class definition;
-when the JSON is decoded, additional or different values will be created
-from the original raw data.</p>
-<p>Note that the JSON document doesn&#8217;t <strong>really</strong> work in bytes. We had two
-choices: base64 encode the original bytes, or trust that the bytes were only
-a subset of printable ASCII characters that overlap with UTF-8.</p>
-<p>We chose the latter approach. The output is text, which overlaps with ASCII.
-This allows the <a class="reference internal" href="#nmeatools.nmea_data.Sentence_Factory" title="nmeatools.nmea_data.Sentence_Factory"><code class="xref py py-class docutils literal"><span class="pre">Sentence_Factory</span></code></a> and the various subclasses
-of <a class="reference internal" href="#nmeatools.nmea_data.Sentence" title="nmeatools.nmea_data.Sentence"><code class="xref py py-class docutils literal"><span class="pre">Sentence</span></code></a> to use text internally.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">object</span> <span class="o">=</span> <span class="n">GPWPL</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;GPWPL&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;5128.62&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;N&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;00027.58&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;W&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;EGLL&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">object</span>
-<span class="go">GPWPL 51°28.62′N 0°27.58′W EGLL</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="n">Encoder</span><span class="p">(</span><span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-<span class="go">{</span>
-<span class="go">  &quot;_args&quot;: [</span>
-<span class="go">    &quot;5128.62&quot;,</span>
-<span class="go">    &quot;N&quot;,</span>
-<span class="go">    &quot;00027.58&quot;,</span>
-<span class="go">    &quot;W&quot;,</span>
-<span class="go">    &quot;EGLL&quot;</span>
-<span class="go">  ],</span>
-<span class="go">  &quot;_class&quot;: &quot;GPWPL&quot;,</span>
-<span class="go">  &quot;_name&quot;: &quot;GPWPL&quot;</span>
-<span class="go">}</span>
-</pre></div>
-</div>
-<dl class="method">
-<dt id="nmeatools.nmea_data.Encoder.default">
-<code class="descname">default</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.Encoder.default" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.Encoder.log">
-<code class="descname">log</code><em class="property"> = &lt;Logger Encoder (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.nmea_data.Encoder.log" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.Field">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">Field</code><span class="sig-paren">(</span><em>title</em>, <em>name</em>, <em>conversion</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.Field" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="attribute">
-<dt id="nmeatools.nmea_data.Field.conversion">
-<code class="descname">conversion</code><a class="headerlink" href="#nmeatools.nmea_data.Field.conversion" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alias for field number 2</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.Field.name">
-<code class="descname">name</code><a class="headerlink" href="#nmeatools.nmea_data.Field.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alias for field number 1</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.Field.title">
-<code class="descname">title</code><a class="headerlink" href="#nmeatools.nmea_data.Field.title" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alias for field number 0</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.GPGGA">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">GPGGA</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.GPGGA" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fix data</p>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.GPGGA.fields">
-<code class="descname">fields</code><em class="property"> = [Field(title='UTC Time', name='time_utc', conversion=&lt;function utc_time&gt;), Field(title='Latitude', name='lat', conversion=&lt;function lat&gt;), Field(title='N/S Indicator', name='lat_h', conversion=&lt;function text&gt;), Field(title='Longitude', name='lon', conversion=&lt;function lon&gt;), Field(title='E/W Indicator', name='lon_h', conversion=&lt;function text&gt;), Field(title='Position Fix', name='fix', conversion=&lt;function text&gt;), Field(title='Satellites Used', name='sat_used', conversion=&lt;function nint&gt;), Field(title='Horizontal dilution of precision (HDOP)', name='hdop', conversion=&lt;function nfloat&gt;), Field(title='Altitude in meters according to WGS-84 ellipsoid', name='alt', conversion=&lt;function nfloat&gt;), Field(title='Altitude Units', name='units_alt', conversion=&lt;function text&gt;), Field(title='Geoid seperation in meters according to WGS-84 ellipsoid', name='geoid_sep', conversion=&lt;function nfloat&gt;), Field(title='Seperation Units', name='units_sep', conversion=&lt;function text&gt;), Field(title='Age of DGPS data in seconds', name='age', conversion=&lt;function nfloat&gt;), Field(title='DGPS Station ID', name='station', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data.GPGGA.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.GPGLL">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">GPGLL</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.GPGLL" title="Permalink to this definition">¶</a></dt>
-<dd><p>Position</p>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.GPGLL.fields">
-<code class="descname">fields</code><em class="property"> = [Field(title='Latitude', name='lat', conversion=&lt;function lat&gt;), Field(title='N/S Indicator', name='lat_h', conversion=&lt;function text&gt;), Field(title='Longitude', name='lon', conversion=&lt;function lon&gt;), Field(title='E/W Indicator', name='lon_h', conversion=&lt;function text&gt;), Field(title='UTC Time', name='time_utc', conversion=&lt;function utc_time&gt;), Field(title='Status', name='status', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data.GPGLL.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.GPGSA">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">GPGSA</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.GPGSA" title="Permalink to this definition">¶</a></dt>
-<dd><p>Active satellites</p>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.GPGSA.fields">
-<code class="descname">fields</code><em class="property"> = [Field(title='Mode 1', name='mode1', conversion=&lt;function text&gt;), Field(title='Mode 2', name='mode2', conversion=&lt;function text&gt;), Field(title='Satellite used on channel PRN', name='prn_00', conversion=&lt;function text&gt;), Field(title='PRN01', name='prn_01', conversion=&lt;function text&gt;), Field(title='PRN02', name='prn_02', conversion=&lt;function text&gt;), Field(title='PRN03', name='prn_03', conversion=&lt;function text&gt;), Field(title='PRN04', name='prn_04', conversion=&lt;function text&gt;), Field(title='PRN05', name='prn_05', conversion=&lt;function text&gt;), Field(title='PRN06', name='prn_06', conversion=&lt;function text&gt;), Field(title='PRN07', name='prn_07', conversion=&lt;function text&gt;), Field(title='PRN08', name='prn_08', conversion=&lt;function text&gt;), Field(title='PRN09', name='prn_09', conversion=&lt;function text&gt;), Field(title='PRN10', name='prn_10', conversion=&lt;function text&gt;), Field(title='PRN11', name='prn_11', conversion=&lt;function text&gt;), Field(title='Position dilution of precision (PDOP)', name='pdop', conversion=&lt;function nfloat&gt;), Field(title='Horizontal dilution of precision (HDOP)', name='hdop', conversion=&lt;function nfloat&gt;), Field(title='Vertical dilution of precision (VDOP)', name='vdop', conversion=&lt;function nfloat&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data.GPGSA.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.GPGSV">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">GPGSV</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.GPGSV" title="Permalink to this definition">¶</a></dt>
-<dd><p>Satellites in view</p>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.GPGSV.fields">
-<code class="descname">fields</code><em class="property"> = [Field(title='Number of messages (1 to 9)', name='num', conversion=&lt;function nint&gt;), Field(title='Sequence number', name='seq', conversion=&lt;function nint&gt;), Field(title='Satellites in view', name='satinview', conversion=&lt;function nint&gt;), Field(title='Satellite ID 1 (1-32)', name='sat1_id', conversion=&lt;function nint&gt;), Field(title='Elevation in degrees (0-90)', name='sat1_el', conversion=&lt;function nint&gt;), Field(title='Azimuth in degrees (0-359)', name='sat1_az', conversion=&lt;function nint&gt;), Field(title='Signal to noise ration in dBHZ (0-99)', name='sat1_sn', conversion=&lt;function nint&gt;), Field(title='Satellite ID 2 (1-32)', name='sat2_id', conversion=&lt;function nint&gt;), Field(title='Elevation in degrees (0-90)', name='sat2_el', conversion=&lt;function nint&gt;), Field(title='Azimuth in degrees (0-359)', name='sat2_az', conversion=&lt;function nint&gt;), Field(title='Signal to noise ration in dBHZ (0-99)', name='sat2_sn', conversion=&lt;function nint&gt;), Field(title='Satellite ID 3 (1-32)', name='sat3_id', conversion=&lt;function nint&gt;), Field(title='Elevation in degrees (0-90)', name='sat3_el', conversion=&lt;function nint&gt;), Field(title='Azimuth in degrees (0-359)', name='sat3_az', conversion=&lt;function nint&gt;), Field(title='Signal to noise ration in dBHZ (0-99)', name='sat3_sn', conversion=&lt;function nint&gt;), Field(title='Satellite ID 4 (1-32)', name='sat4_id', conversion=&lt;function nint&gt;), Field(title='Elevation in degrees (0-90)', name='sat4_el', conversion=&lt;function nint&gt;), Field(title='Azimuth in degrees (0-359)', name='sat4_az', conversion=&lt;function nint&gt;), Field(title='Signal to noise ration in dBHZ (0-99)', name='sat4_sn', conversion=&lt;function nint&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data.GPGSV.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.GPRMC">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">GPRMC</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.GPRMC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Position and time</p>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.GPRMC.fields">
-<code class="descname">fields</code><em class="property"> = [Field(title='UTC Time', name='time_utc', conversion=&lt;function utc_time&gt;), Field(title='Status', name='status', conversion=&lt;function text&gt;), Field(title='Latitude', name='lat', conversion=&lt;function lat&gt;), Field(title='N/S Indicator', name='lat_h', conversion=&lt;function text&gt;), Field(title='Longitude', name='lon', conversion=&lt;function lon&gt;), Field(title='E/W Indicator', name='lon_h', conversion=&lt;function text&gt;), Field(title='Speed over ground', name='sog', conversion=&lt;function nfloat&gt;), Field(title='Course over ground', name='cog', conversion=&lt;function nfloat&gt;), Field(title='UTC Date', name='date_utc', conversion=&lt;function utc_date&gt;), Field(title='Magnetic variation', name='mag_var', conversion=&lt;function nfloat&gt;), Field(title='Magnetic variation', name='mag_var_flag', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data.GPRMC.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.GPRTE">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">GPRTE</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.GPRTE" title="Permalink to this definition">¶</a></dt>
-<dd><p>GP Route</p>
-<p>Examples:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$GPRTE,2,1,c,0,PBRCPK,PBRTO,PTELGR,PPLAND,PYAMBU,PPFAIR,PWARRN,PMORTL,PLISMR*73
-$GPRTE,2,2,c,0,PCRESY,GRYRIE,GCORIO,GWERR,GWESTG,7FED*34
-       1 2 3 4 5 ..
-       
-1. Number of sentences in sequence
-2. Sentence number
-3. &#39;c&#39; = Current active route, &#39;w&#39; = waypoint list starts with destination waypoint
-4. Name or number of the active route
-5. Rest of the body is the names of waypoints in Route
-</pre></div>
-</div>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.GPRTE.fields">
-<code class="descname">fields</code><em class="property"> = [Field(title='Number of sentences in sequence', name='length', conversion=&lt;function nint&gt;), Field(title='Sentence number', name='sentence', conversion=&lt;function nint&gt;), Field(title='Current or Waypoint', name='status', conversion=&lt;function text&gt;), Field(title='Name or Number', name='id', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data.GPRTE.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.GPVTG">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">GPVTG</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.GPVTG" title="Permalink to this definition">¶</a></dt>
-<dd><p>Course over ground</p>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.GPVTG.fields">
-<code class="descname">fields</code><em class="property"> = [Field(title='Course in degrees', name='course_1', conversion=&lt;function nfloat&gt;), Field(title='Reference, T = True heading', name='ref_1', conversion=&lt;function text&gt;), Field(title='Course in degrees', name='course_2', conversion=&lt;function nfloat&gt;), Field(title='Reference, M = Magnetic heading', name='ref_2', conversion=&lt;function text&gt;), Field(title='Horizontal speed (SOG)', name='sog_1', conversion=&lt;function nfloat&gt;), Field(title='Units, N = Knots', name='units_sog_1', conversion=&lt;function text&gt;), Field(title='Horizontal Speed (SOG)', name='sog_2', conversion=&lt;function nfloat&gt;), Field(title='Units, К = Km/h', name='units_sog_2', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data.GPVTG.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.GPWPL">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">GPWPL</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.GPWPL" title="Permalink to this definition">¶</a></dt>
-<dd><p>GP Waypoint Location</p>
-<p>Examples:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$GPWPL,4917.16,N,12310.64,W,003*65
-       1         2          3
-       
-  1. 4917.16,N    Latitude of waypoint. This is 49°16.17′N
-  2. 12310.64,W   Longitude of waypoint. This is 123°10.64′W
-  3. 003          Waypoint ID
-
-$GPWPL,5128.62,N,00027.58,W,EGLL*59
-       1       2 3        4 5
-
-  1. 5128.62   Latitude of this waypoint
-  2. N         North/South
-  3. 00027.58  Longitude of this waypoint
-  4. W         East/West
-  5. EGLL      Ident of this waypoint
-</pre></div>
-</div>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.GPWPL.fields">
-<code class="descname">fields</code><em class="property"> = [Field(title='Latitude', name='lat_src', conversion=&lt;function lat&gt;), Field(title='N/S Indicator', name='lat_h', conversion=&lt;function text&gt;), Field(title='Longitude', name='lon_src', conversion=&lt;function lon&gt;), Field(title='E/W Indicator', name='lon_h', conversion=&lt;function text&gt;), Field(title='Name', name='name', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data.GPWPL.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.GPXTE">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">GPXTE</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.GPXTE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cross-Track Error, Measured</p>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.GPXTE.fields">
-<code class="descname">fields</code><em class="property"> = [Field(title='General warning flag', name='warning', conversion=&lt;function text&gt;), Field(title='Not Used', name='not_used', conversion=&lt;function text&gt;), Field(title='cross track error distance', name='distance', conversion=&lt;function nfloat&gt;), Field(title='steer to correct (L/R)', name='steer', conversion=&lt;function text&gt;), Field(title='Units N = Nautical miles', name='units', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data.GPXTE.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.GPZDA">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">GPZDA</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.GPZDA" title="Permalink to this definition">¶</a></dt>
-<dd><p>UTC Date and Time</p>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.GPZDA.fields">
-<code class="descname">fields</code><em class="property"> = [Field(title='UTC Time', name='time_utc', conversion=&lt;function utc_time&gt;), Field(title='Day (01 to 31)', name='day', conversion=&lt;function nint&gt;), Field(title='Month (01 to 12)', name='month', conversion=&lt;function nint&gt;), Field(title='Year', name='year', conversion=&lt;function nint&gt;), Field(title='Time zone, GMT displacement, hours (00 to ± 13)', name='tz_hr', conversion=&lt;function nint&gt;), Field(title='Time zone, GMT displacement, minutes', name='tz_min', conversion=&lt;function nint&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data.GPZDA.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.Scanner">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">Scanner</code><span class="sig-paren">(</span><em>options</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.Scanner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Scan the device, yielding a sequence of sentences.</p>
-<p>This is an Interable and a Context Manager for reading from an NMEA-0183 device.</p>
-<p>The typical use case is this</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Scanner</span><span class="p">(</span><span class="n">options</span><span class="p">)</span> <span class="k">as</span> <span class="n">GPS</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">sentnce</span> <span class="ow">in</span> <span class="n">GPS</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.Scanner.log">
-<code class="descname">log</code><em class="property"> = &lt;Logger Scanner (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.nmea_data.Scanner.log" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="staticmethod">
-<dt id="nmeatools.nmea_data.Scanner.validate">
-<em class="property">static </em><code class="descname">validate</code><span class="sig-paren">(</span><em>sentence_bytes</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.Scanner.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate an NMEA sentence, returning either a tuple of substrings or an 
-<code class="xref py py-exc docutils literal"><span class="pre">AssertionError</span></code>.</p>
+<div class="section" id="module-nmeatools.haversine">
+<span id="haversine"></span><h2>haversine<a class="headerlink" href="#module-nmeatools.haversine" title="Permalink to this headline">¶</a></h2>
+<p>Haversine computation.</p>
+<p>Defines a handy function for distance in Nautical Miles.</p>
+<dl class="function">
+<dt id="nmeatools.haversine.nm_haversine">
+<code class="descclassname">nmeatools.haversine.</code><code class="descname">nm_haversine</code><span class="sig-paren">(</span><em>lat_1</em>, <em>lon_1</em>, <em>lat_2</em>, <em>lon_2</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.haversine.nm_haversine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes distance in NM</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sentence_bytes</strong> &#8211; A bytes object with the raw sentence.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lat_1</strong> &#8211; Latitude of point 1</li>
+<li><strong>lon_1</strong> &#8211; Longitude of point 1</li>
+<li><strong>lat_2</strong> &#8211; Latitude of point 2</li>
+<li><strong>lon_2</strong> &#8211; Longitude of point 2</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple with individual fields, suitable for use with a
-<a class="reference internal" href="#nmeatools.nmea_data.Sentence_Factory" title="nmeatools.nmea_data.Sentence_Factory"><code class="xref py py-class docutils literal"><span class="pre">Sentence_Factory</span></code></a> isntance.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>AssertionError</strong> &#8211; If the sentence is incomplete in some way.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">distance, NM</p>
+</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.Sentence">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">Sentence</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.Sentence" title="Permalink to this definition">¶</a></dt>
-<dd><p>Superclass for NMEA0183 Sentences.</p>
-<p>Each subclass provides a value for <code class="docutils literal"><span class="pre">fields</span></code>.
-This sequence if <a class="reference internal" href="#nmeatools.nmea_data.Field" title="nmeatools.nmea_data.Field"><code class="xref py py-class docutils literal"><span class="pre">Field</span></code></a> objects is used to convert the items in the 
-message from bytes to useful values.</p>
-<p>There are two fields common to all sentences.</p>
+<dl class="function">
+<dt id="nmeatools.haversine.haversine">
+<code class="descclassname">nmeatools.haversine.</code><code class="descname">haversine</code><span class="sig-paren">(</span><em>lat_1: float</em>, <em>lon_1: float</em>, <em>lat_2: float</em>, <em>lon_2: float</em>, <em>R: float = 3440</em><span class="sig-paren">)</span> &rarr; float<a class="headerlink" href="#nmeatools.haversine.haversine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance between points.</p>
+<div class="math">
+<p><img src="_images/math/ee7f991d9f654508c5db8b27bece8a7b5137b568.png" alt="a = \sqrt { \sin^2(\frac{\Delta_{lat}}{2}) + \cos(lat_1) \cos(lat_2) \sin^2(\frac{\Delta_{lon}}{2}) }"/></p>
+</div><div class="math">
+<p><img src="_images/math/8c40733d6a442837e2fefd18f4ccd00fbfede706.png" alt="c = 2R \arcsin{a}"/></p>
+</div><p>R is radius, R=MI computes in miles. Default is nautical miles.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">_name:</th><td class="field-body">The sentence type as text. The bytes are decoded from ASCII.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lat_1</strong> &#8211; Latitude of point 1</li>
+<li><strong>lon_1</strong> &#8211; Longitude of point 1</li>
+<li><strong>lat_2</strong> &#8211; Latitude of point 2</li>
+<li><strong>lon_2</strong> &#8211; Longitude of point 2</li>
+<li><strong>R</strong> &#8211; Mean earth radius in desired units. R=NM is the default.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">_args:</th><td class="field-body">The tuple with the original argument values as Python text.
-These have been decoded from ASCII, which is (perhaps) not the best
-idea, but it makes access simple.</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.Sentence.fields">
-<code class="descname">fields</code><em class="property"> = []</em><a class="headerlink" href="#nmeatools.nmea_data.Sentence.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.Sentence.log">
-<code class="descname">log</code><em class="property"> = &lt;Logger Sentence (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.nmea_data.Sentence.log" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.Sentence_Factory">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">Sentence_Factory</code><a class="headerlink" href="#nmeatools.nmea_data.Sentence_Factory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a sequence of values, locate the class with a name that
-matches the sentence header and instantiate that class.</p>
-<p>This examines all subclasses of <a class="reference internal" href="#nmeatools.nmea_data.Sentence" title="nmeatools.nmea_data.Sentence"><code class="xref py py-class docutils literal"><span class="pre">Sentence</span></code></a>. The class names
-must match the sentence header.
-If there&#8217;s no match, create an <a class="reference internal" href="#nmeatools.nmea_data.UnknownSentence" title="nmeatools.nmea_data.UnknownSentence"><code class="xref py py-class docutils literal"><span class="pre">UnknownSentence</span></code></a> instance.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Params args:</th><td class="field-body">The message fields.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#nmeatools.nmea_data.Sentence" title="nmeatools.nmea_data.Sentence"><code class="xref py py-class docutils literal"><span class="pre">Sentence</span></code></a> instance.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">distance based on units of R.</p>
+</td>
 </tr>
 </tbody>
 </table>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.Sentence_Factory.log">
-<code class="descname">log</code><em class="property"> = &lt;Logger Sentence_Factory (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.nmea_data.Sentence_Factory.log" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.Sentence_Factory.sentence_class_map">
-<code class="descname">sentence_class_map</code><em class="property"> = {b'UnknownSentence': &lt;class 'nmeatools.nmea_data.UnknownSentence'&gt;, b'GPRMC': &lt;class 'nmeatools.nmea_data.GPRMC'&gt;, b'GPGGA': &lt;class 'nmeatools.nmea_data.GPGGA'&gt;, b'GPGLL': &lt;class 'nmeatools.nmea_data.GPGLL'&gt;, b'GPGSA': &lt;class 'nmeatools.nmea_data.GPGSA'&gt;, b'GPGSV': &lt;class 'nmeatools.nmea_data.GPGSV'&gt;, b'GPVTG': &lt;class 'nmeatools.nmea_data.GPVTG'&gt;, b'GPZDA': &lt;class 'nmeatools.nmea_data.GPZDA'&gt;, b'GPXTE': &lt;class 'nmeatools.nmea_data.GPXTE'&gt;, b'GPWPL': &lt;class 'nmeatools.nmea_data.GPWPL'&gt;, b'GPRTE': &lt;class 'nmeatools.nmea_data.GPRTE'&gt;}</em><a class="headerlink" href="#nmeatools.nmea_data.Sentence_Factory.sentence_class_map" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="nmeatools.nmea_data.UnknownSentence">
-<em class="property">class </em><code class="descclassname">nmeatools.nmea_data.</code><code class="descname">UnknownSentence</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.UnknownSentence" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fallback for NMEA0183 Sentences that aren&#8217;t otherwise parseable.</p>
-<dl class="attribute">
-<dt id="nmeatools.nmea_data.UnknownSentence.log">
-<code class="descname">log</code><em class="property"> = &lt;Logger UnknownSentence (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.nmea_data.UnknownSentence.log" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="nmeatools.nmea_data.lat">
-<code class="descclassname">nmeatools.nmea_data.</code><code class="descname">lat</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.lat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert source bytes to UTC latitude.
-Latitude: 2543.7024 = DDMM.MMMM</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lat</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;2543.7024&#39;</span><span class="p">)</span>
-<span class="go">(25, 43.7024)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">haversine</span><span class="p">(</span><span class="mf">36.12</span><span class="p">,</span> <span class="o">-</span><span class="mf">86.67</span><span class="p">,</span> <span class="mf">33.94</span><span class="p">,</span> <span class="o">-</span><span class="mf">118.40</span><span class="p">,</span> <span class="n">R</span><span class="o">=</span><span class="mf">6372.8</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span>
+<span class="go">2887.25995</span>
 </pre></div>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="nmeatools.nmea_data.lon">
-<code class="descclassname">nmeatools.nmea_data.</code><code class="descname">lon</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.lon" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert source bytes to UTC longitude.
-Longitude: 08014.5267 = DDDMM.MMMM</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lon</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;08014.5267&#39;</span><span class="p">)</span>
-<span class="go">(80, 14.5267)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="nmeatools.nmea_data.nfloat">
-<code class="descclassname">nmeatools.nmea_data.</code><code class="descname">nfloat</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.nfloat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert to float or None</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nfloat</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">nfloat</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;123.45&#39;</span><span class="p">)</span>
-<span class="go">123.45</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="nmeatools.nmea_data.nint">
-<code class="descclassname">nmeatools.nmea_data.</code><code class="descname">nint</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.nint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert to int or None</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nint</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">nint</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;123&#39;</span><span class="p">)</span>
-<span class="go">123</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="nmeatools.nmea_data.sample_CP">
-<code class="descclassname">nmeatools.nmea_data.</code><code class="descname">sample_CP</code><span class="sig-paren">(</span><em>device</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.sample_CP" title="Permalink to this definition">¶</a></dt>
-<dd><p>Chart Plotter. The background message cycle is filtered out. Reads until Ctrl-C.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="nmeatools.nmea_data.sample_GPS">
-<code class="descclassname">nmeatools.nmea_data.</code><code class="descname">sample_GPS</code><span class="sig-paren">(</span><em>device</em>, <em>limit=16</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.sample_GPS" title="Permalink to this definition">¶</a></dt>
-<dd><p>GPS. Displays selected messages until some limit is reached.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="nmeatools.nmea_data.text">
-<code class="descclassname">nmeatools.nmea_data.</code><code class="descname">text</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert source bytes to text.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">text</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;xyz&#39;</span><span class="p">)</span>
-<span class="go">&#39;xyz&#39;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="nmeatools.nmea_data.utc_date">
-<code class="descclassname">nmeatools.nmea_data.</code><code class="descname">utc_date</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.utc_date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert source bytes to UTC date.
-mmddyy</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">utc_date</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;091056&#39;</span><span class="p">)</span>
-<span class="go">(9, 10, 56)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="nmeatools.nmea_data.utc_time">
-<code class="descclassname">nmeatools.nmea_data.</code><code class="descname">utc_time</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data.utc_time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert source bytes to UTC time as (H, M, S) triple
-HHMMSS.000</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">utc_time</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;123456.000&#39;</span><span class="p">)</span>
-<span class="go">(12, 34, 56.0)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-</div>
 </div>
 <div class="section" id="module-nmeatools.nmea_capture">
 <span id="nmea-capture"></span><h2>nmea_capture<a class="headerlink" href="#module-nmeatools.nmea_capture" title="Permalink to this headline">¶</a></h2>
@@ -708,7 +268,7 @@ then writes the output file with the captured sentences.</p>
 <dt id="nmeatools.nmea_capture.sentence_iter">
 <code class="descclassname">nmeatools.nmea_capture.</code><code class="descname">sentence_iter</code><span class="sig-paren">(</span><em>options</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_capture.sentence_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Filtered reader of sentnces. Rejects any sentences from the background list.</p>
-<p>Currently, the list is:</p>
+<p>Currently, the reject list is:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s1">&#39;GPRMC&#39;</span><span class="p">,</span> <span class="s1">&#39;GPGGA&#39;</span><span class="p">,</span> <span class="s1">&#39;GPGLL&#39;</span><span class="p">,</span> <span class="s1">&#39;GPGSA&#39;</span><span class="p">,</span> <span class="s1">&#39;GPGSV&#39;</span><span class="p">,</span> <span class="s1">&#39;GPVTG&#39;</span><span class="p">,</span> <span class="s1">&#39;GPZDA&#39;</span><span class="p">,</span> <span class="s1">&#39;GPXTE&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -729,6 +289,1015 @@ background messages.</td>
 </dd></dl>
 
 </div>
+</div>
+<div class="section" id="module-nmeatools.nmea_data_eager">
+<span id="nmea-data-eager"></span><h2>nmea_data_eager<a class="headerlink" href="#module-nmeatools.nmea_data_eager" title="Permalink to this headline">¶</a></h2>
+<p>Define NMEA Sentences. 
+This eagerly populates many fields from the source bytes.</p>
+<p>Messages that are captured and (to an extent) parsed.</p>
+<ul class="simple">
+<li>$GPRMC - Recommended Minimum Specific GPS/TRANSIT Data</li>
+<li>$GPGGA - Global Positioning System Fix Data</li>
+<li>$GPGLL - Geographic position, latitude / longitude</li>
+<li>$GPGSA - GPS DOP and active satellites</li>
+<li>$GPGSV - GPS Satellites in view</li>
+<li>$GPVTG - Track made good and ground speed</li>
+<li>$GPZDA - Date &amp; Time</li>
+<li>$GPXTE - Cross-track error, Measured</li>
+<li>$GPWPL - Waypoint (example: b&#8216;3845.363&#8217;, b&#8217;N&#8217;, b&#8216;07629.551&#8217;, b&#8217;W&#8217;, b&#8217;FISHTRP&#8217;)</li>
+<li>$GPRTE - Route</li>
+</ul>
+<p>These are not (currently) interpreted.</p>
+<ul class="simple">
+<li>$GPDBT - Depth Below Transducer</li>
+<li>$GPDPT - Depth</li>
+<li>$GPMTW - Water Temperature</li>
+<li>$GPVHW - Water Speed and Heading</li>
+</ul>
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.Decoder">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">Decoder</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.Decoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decode a sentence from JSON notation. This re-applies the class definition,
+computing and derived values from the original bytes.</p>
+<p>Note that the JSON document doesn&#8217;t <strong>really</strong> work in bytes. We had two
+choices: base64 encode the original bytes, or trust that the bytes were only
+a subset of printable ASCII characters that overlap with UTF-8.</p>
+<p>We chose the latter approach. The input is text, which overlaps with ASCII.
+We need to encode it into ASCII to recover the bytes. These are then passed
+to the <a class="reference internal" href="#nmeatools.nmea_data_eager.Sentence_Factory" title="nmeatools.nmea_data_eager.Sentence_Factory"><code class="xref py py-class docutils literal"><span class="pre">Sentence_Factory</span></code></a> to recover <a class="reference internal" href="#nmeatools.nmea_data_eager.Sentence" title="nmeatools.nmea_data_eager.Sentence"><code class="xref py py-class docutils literal"><span class="pre">Sentence</span></code></a> instances.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">object</span> <span class="o">=</span> <span class="n">GPWPL</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;GPWPL&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;5128.62&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;N&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;00027.58&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;W&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;EGLL&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">object</span>
+<span class="go">GPWPL 51°28.62′N 0°27.58′W EGLL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="n">Encoder</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_object</span> <span class="o">=</span> <span class="n">Decoder</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_object</span>
+<span class="go">GPWPL 51°28.62′N 0°27.58′W EGLL</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="nmeatools.nmea_data_eager.Decoder.nmea_object_hook">
+<code class="descname">nmea_object_hook</code><span class="sig-paren">(</span><em>as_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.Decoder.nmea_object_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.Encoder">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">Encoder</code><span class="sig-paren">(</span><em>*</em>, <em>skipkeys=False</em>, <em>ensure_ascii=True</em>, <em>check_circular=True</em>, <em>allow_nan=True</em>, <em>sort_keys=False</em>, <em>indent=None</em>, <em>separators=None</em>, <em>default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.Encoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encode the sentence into JSON. This dumps the raw <code class="docutils literal"><span class="pre">_args</span></code> value, 
+ignoring all derived values.  This allows a change to the class definition;
+when the JSON is decoded, additional or different values will be created
+from the original raw data.</p>
+<p>Note that the JSON document doesn&#8217;t <strong>really</strong> work in bytes. We had two
+choices: base64 encode the original bytes, or trust that the bytes were only
+a subset of printable ASCII characters that overlap with UTF-8.</p>
+<p>We chose the latter approach. The output is text, which overlaps with ASCII.
+This allows the <a class="reference internal" href="#nmeatools.nmea_data_eager.Sentence_Factory" title="nmeatools.nmea_data_eager.Sentence_Factory"><code class="xref py py-class docutils literal"><span class="pre">Sentence_Factory</span></code></a> and the various subclasses
+of <a class="reference internal" href="#nmeatools.nmea_data_eager.Sentence" title="nmeatools.nmea_data_eager.Sentence"><code class="xref py py-class docutils literal"><span class="pre">Sentence</span></code></a> to use text internally.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">object</span> <span class="o">=</span> <span class="n">GPWPL</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;GPWPL&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;5128.62&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;N&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;00027.58&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;W&#39;</span><span class="p">,</span><span class="n">b</span><span class="s1">&#39;EGLL&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">object</span>
+<span class="go">GPWPL 51°28.62′N 0°27.58′W EGLL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="n">Encoder</span><span class="p">(</span><span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="go">{</span>
+<span class="go">  &quot;_args&quot;: [</span>
+<span class="go">    &quot;5128.62&quot;,</span>
+<span class="go">    &quot;N&quot;,</span>
+<span class="go">    &quot;00027.58&quot;,</span>
+<span class="go">    &quot;W&quot;,</span>
+<span class="go">    &quot;EGLL&quot;</span>
+<span class="go">  ],</span>
+<span class="go">  &quot;_class&quot;: &quot;GPWPL&quot;,</span>
+<span class="go">  &quot;_name&quot;: &quot;GPWPL&quot;</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="nmeatools.nmea_data_eager.Encoder.default">
+<code class="descname">default</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.Encoder.default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.Encoder.log">
+<code class="descname">log</code><em class="property"> = &lt;Logger Encoder (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.nmea_data_eager.Encoder.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.Field">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">Field</code><span class="sig-paren">(</span><em>title</em>, <em>name</em>, <em>conversion</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.Field" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.Field.conversion">
+<code class="descname">conversion</code><a class="headerlink" href="#nmeatools.nmea_data_eager.Field.conversion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.Field.name">
+<code class="descname">name</code><a class="headerlink" href="#nmeatools.nmea_data_eager.Field.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.Field.title">
+<code class="descname">title</code><a class="headerlink" href="#nmeatools.nmea_data_eager.Field.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.GPGGA">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">GPGGA</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.GPGGA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fix data</p>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.GPGGA.fields">
+<code class="descname">fields</code><em class="property"> = [Field(title='UTC Time', name='time_utc', conversion=&lt;function utc_time&gt;), Field(title='Latitude', name='lat', conversion=&lt;function lat&gt;), Field(title='N/S Indicator', name='lat_h', conversion=&lt;function text&gt;), Field(title='Longitude', name='lon', conversion=&lt;function lon&gt;), Field(title='E/W Indicator', name='lon_h', conversion=&lt;function text&gt;), Field(title='Position Fix', name='fix', conversion=&lt;function text&gt;), Field(title='Satellites Used', name='sat_used', conversion=&lt;function nint&gt;), Field(title='Horizontal dilution of precision (HDOP)', name='hdop', conversion=&lt;function nfloat&gt;), Field(title='Altitude in meters according to WGS-84 ellipsoid', name='alt', conversion=&lt;function nfloat&gt;), Field(title='Altitude Units', name='units_alt', conversion=&lt;function text&gt;), Field(title='Geoid seperation in meters according to WGS-84 ellipsoid', name='geoid_sep', conversion=&lt;function nfloat&gt;), Field(title='Seperation Units', name='units_sep', conversion=&lt;function text&gt;), Field(title='Age of DGPS data in seconds', name='age', conversion=&lt;function nfloat&gt;), Field(title='DGPS Station ID', name='station', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data_eager.GPGGA.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.GPGLL">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">GPGLL</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.GPGLL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Position</p>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.GPGLL.fields">
+<code class="descname">fields</code><em class="property"> = [Field(title='Latitude', name='lat', conversion=&lt;function lat&gt;), Field(title='N/S Indicator', name='lat_h', conversion=&lt;function text&gt;), Field(title='Longitude', name='lon', conversion=&lt;function lon&gt;), Field(title='E/W Indicator', name='lon_h', conversion=&lt;function text&gt;), Field(title='UTC Time', name='time_utc', conversion=&lt;function utc_time&gt;), Field(title='Status', name='status', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data_eager.GPGLL.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.GPGSA">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">GPGSA</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.GPGSA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Active satellites</p>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.GPGSA.fields">
+<code class="descname">fields</code><em class="property"> = [Field(title='Mode 1', name='mode1', conversion=&lt;function text&gt;), Field(title='Mode 2', name='mode2', conversion=&lt;function text&gt;), Field(title='Satellite used on channel PRN', name='prn_00', conversion=&lt;function text&gt;), Field(title='PRN01', name='prn_01', conversion=&lt;function text&gt;), Field(title='PRN02', name='prn_02', conversion=&lt;function text&gt;), Field(title='PRN03', name='prn_03', conversion=&lt;function text&gt;), Field(title='PRN04', name='prn_04', conversion=&lt;function text&gt;), Field(title='PRN05', name='prn_05', conversion=&lt;function text&gt;), Field(title='PRN06', name='prn_06', conversion=&lt;function text&gt;), Field(title='PRN07', name='prn_07', conversion=&lt;function text&gt;), Field(title='PRN08', name='prn_08', conversion=&lt;function text&gt;), Field(title='PRN09', name='prn_09', conversion=&lt;function text&gt;), Field(title='PRN10', name='prn_10', conversion=&lt;function text&gt;), Field(title='PRN11', name='prn_11', conversion=&lt;function text&gt;), Field(title='Position dilution of precision (PDOP)', name='pdop', conversion=&lt;function nfloat&gt;), Field(title='Horizontal dilution of precision (HDOP)', name='hdop', conversion=&lt;function nfloat&gt;), Field(title='Vertical dilution of precision (VDOP)', name='vdop', conversion=&lt;function nfloat&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data_eager.GPGSA.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.GPGSV">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">GPGSV</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.GPGSV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Satellites in view</p>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.GPGSV.fields">
+<code class="descname">fields</code><em class="property"> = [Field(title='Number of messages (1 to 9)', name='num', conversion=&lt;function nint&gt;), Field(title='Sequence number', name='seq', conversion=&lt;function nint&gt;), Field(title='Satellites in view', name='satinview', conversion=&lt;function nint&gt;), Field(title='Satellite ID 1 (1-32)', name='sat1_id', conversion=&lt;function nint&gt;), Field(title='Elevation in degrees (0-90)', name='sat1_el', conversion=&lt;function nint&gt;), Field(title='Azimuth in degrees (0-359)', name='sat1_az', conversion=&lt;function nint&gt;), Field(title='Signal to noise ration in dBHZ (0-99)', name='sat1_sn', conversion=&lt;function nint&gt;), Field(title='Satellite ID 2 (1-32)', name='sat2_id', conversion=&lt;function nint&gt;), Field(title='Elevation in degrees (0-90)', name='sat2_el', conversion=&lt;function nint&gt;), Field(title='Azimuth in degrees (0-359)', name='sat2_az', conversion=&lt;function nint&gt;), Field(title='Signal to noise ration in dBHZ (0-99)', name='sat2_sn', conversion=&lt;function nint&gt;), Field(title='Satellite ID 3 (1-32)', name='sat3_id', conversion=&lt;function nint&gt;), Field(title='Elevation in degrees (0-90)', name='sat3_el', conversion=&lt;function nint&gt;), Field(title='Azimuth in degrees (0-359)', name='sat3_az', conversion=&lt;function nint&gt;), Field(title='Signal to noise ration in dBHZ (0-99)', name='sat3_sn', conversion=&lt;function nint&gt;), Field(title='Satellite ID 4 (1-32)', name='sat4_id', conversion=&lt;function nint&gt;), Field(title='Elevation in degrees (0-90)', name='sat4_el', conversion=&lt;function nint&gt;), Field(title='Azimuth in degrees (0-359)', name='sat4_az', conversion=&lt;function nint&gt;), Field(title='Signal to noise ration in dBHZ (0-99)', name='sat4_sn', conversion=&lt;function nint&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data_eager.GPGSV.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.GPRMC">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">GPRMC</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.GPRMC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Position and time</p>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.GPRMC.fields">
+<code class="descname">fields</code><em class="property"> = [Field(title='UTC Time', name='time_utc', conversion=&lt;function utc_time&gt;), Field(title='Status', name='status', conversion=&lt;function text&gt;), Field(title='Latitude', name='lat', conversion=&lt;function lat&gt;), Field(title='N/S Indicator', name='lat_h', conversion=&lt;function text&gt;), Field(title='Longitude', name='lon', conversion=&lt;function lon&gt;), Field(title='E/W Indicator', name='lon_h', conversion=&lt;function text&gt;), Field(title='Speed over ground', name='sog', conversion=&lt;function nfloat&gt;), Field(title='Course over ground', name='cog', conversion=&lt;function nfloat&gt;), Field(title='UTC Date', name='date_utc', conversion=&lt;function utc_date&gt;), Field(title='Magnetic variation', name='mag_var', conversion=&lt;function nfloat&gt;), Field(title='Magnetic variation', name='mag_var_flag', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data_eager.GPRMC.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.GPRTE">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">GPRTE</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.GPRTE" title="Permalink to this definition">¶</a></dt>
+<dd><p>GP Route</p>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$GPRTE,2,1,c,0,PBRCPK,PBRTO,PTELGR,PPLAND,PYAMBU,PPFAIR,PWARRN,PMORTL,PLISMR*73
+$GPRTE,2,2,c,0,PCRESY,GRYRIE,GCORIO,GWERR,GWESTG,7FED*34
+       1 2 3 4 5 ..
+       
+1. Number of sentences in sequence
+2. Sentence number
+3. &#39;c&#39; = Current active route, &#39;w&#39; = waypoint list starts with destination waypoint
+4. Name or number of the active route
+5. Rest of the body is the names of waypoints in Route
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.GPRTE.fields">
+<code class="descname">fields</code><em class="property"> = [Field(title='Number of sentences in sequence', name='length', conversion=&lt;function nint&gt;), Field(title='Sentence number', name='sentence', conversion=&lt;function nint&gt;), Field(title='Current or Waypoint', name='status', conversion=&lt;function text&gt;), Field(title='Name or Number', name='id', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data_eager.GPRTE.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.GPVTG">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">GPVTG</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.GPVTG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Course over ground</p>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.GPVTG.fields">
+<code class="descname">fields</code><em class="property"> = [Field(title='Course in degrees', name='course_1', conversion=&lt;function nfloat&gt;), Field(title='Reference, T = True heading', name='ref_1', conversion=&lt;function text&gt;), Field(title='Course in degrees', name='course_2', conversion=&lt;function nfloat&gt;), Field(title='Reference, M = Magnetic heading', name='ref_2', conversion=&lt;function text&gt;), Field(title='Horizontal speed (SOG)', name='sog_1', conversion=&lt;function nfloat&gt;), Field(title='Units, N = Knots', name='units_sog_1', conversion=&lt;function text&gt;), Field(title='Horizontal Speed (SOG)', name='sog_2', conversion=&lt;function nfloat&gt;), Field(title='Units, К = Km/h', name='units_sog_2', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data_eager.GPVTG.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.GPWPL">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">GPWPL</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.GPWPL" title="Permalink to this definition">¶</a></dt>
+<dd><p>GP Waypoint Location</p>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$GPWPL,4917.16,N,12310.64,W,003*65
+       1         2          3
+       
+  1. 4917.16,N    Latitude of waypoint. This is 49°16.17′N
+  2. 12310.64,W   Longitude of waypoint. This is 123°10.64′W
+  3. 003          Waypoint ID
+
+$GPWPL,5128.62,N,00027.58,W,EGLL*59
+       1       2 3        4 5
+
+  1. 5128.62   Latitude of this waypoint
+  2. N         North/South
+  3. 00027.58  Longitude of this waypoint
+  4. W         East/West
+  5. EGLL      Ident of this waypoint
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.GPWPL.fields">
+<code class="descname">fields</code><em class="property"> = [Field(title='Latitude', name='lat_src', conversion=&lt;function lat&gt;), Field(title='N/S Indicator', name='lat_h', conversion=&lt;function text&gt;), Field(title='Longitude', name='lon_src', conversion=&lt;function lon&gt;), Field(title='E/W Indicator', name='lon_h', conversion=&lt;function text&gt;), Field(title='Name', name='name', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data_eager.GPWPL.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.GPXTE">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">GPXTE</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.GPXTE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cross-Track Error, Measured</p>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.GPXTE.fields">
+<code class="descname">fields</code><em class="property"> = [Field(title='General warning flag', name='warning', conversion=&lt;function text&gt;), Field(title='Not Used', name='not_used', conversion=&lt;function text&gt;), Field(title='cross track error distance', name='distance', conversion=&lt;function nfloat&gt;), Field(title='steer to correct (L/R)', name='steer', conversion=&lt;function text&gt;), Field(title='Units N = Nautical miles', name='units', conversion=&lt;function text&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data_eager.GPXTE.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.GPZDA">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">GPZDA</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.GPZDA" title="Permalink to this definition">¶</a></dt>
+<dd><p>UTC Date and Time</p>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.GPZDA.fields">
+<code class="descname">fields</code><em class="property"> = [Field(title='UTC Time', name='time_utc', conversion=&lt;function utc_time&gt;), Field(title='Day (01 to 31)', name='day', conversion=&lt;function nint&gt;), Field(title='Month (01 to 12)', name='month', conversion=&lt;function nint&gt;), Field(title='Year', name='year', conversion=&lt;function nint&gt;), Field(title='Time zone, GMT displacement, hours (00 to ± 13)', name='tz_hr', conversion=&lt;function nint&gt;), Field(title='Time zone, GMT displacement, minutes', name='tz_min', conversion=&lt;function nint&gt;)]</em><a class="headerlink" href="#nmeatools.nmea_data_eager.GPZDA.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.Sentence">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">Sentence</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.Sentence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Superclass for NMEA0183 Sentences.</p>
+<p>Each subclass provides a value for <code class="docutils literal"><span class="pre">fields</span></code>.
+This sequence if <a class="reference internal" href="#nmeatools.nmea_data_eager.Field" title="nmeatools.nmea_data_eager.Field"><code class="xref py py-class docutils literal"><span class="pre">Field</span></code></a> objects is used to convert the items in the 
+message from bytes to useful values.</p>
+<p>There are two fields common to all sentences.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">_name:</th><td class="field-body">The sentence type as text. The bytes are decoded from ASCII.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">_args:</th><td class="field-body">The tuple with the original argument values as Python text.
+These have been decoded from ASCII, which is (perhaps) not the best
+idea, but it makes access simple.</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.Sentence.fields">
+<code class="descname">fields</code><em class="property"> = []</em><a class="headerlink" href="#nmeatools.nmea_data_eager.Sentence.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.Sentence.log">
+<code class="descname">log</code><em class="property"> = &lt;Logger Sentence (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.nmea_data_eager.Sentence.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.Sentence_Factory">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">Sentence_Factory</code><a class="headerlink" href="#nmeatools.nmea_data_eager.Sentence_Factory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a sequence of values, locate the class with a name that
+matches the sentence header and instantiate that class.</p>
+<p>This examines all subclasses of <a class="reference internal" href="#nmeatools.nmea_data_eager.Sentence" title="nmeatools.nmea_data_eager.Sentence"><code class="xref py py-class docutils literal"><span class="pre">Sentence</span></code></a>. The class names
+must match the sentence header.
+If there&#8217;s no match, create an <a class="reference internal" href="#nmeatools.nmea_data_eager.UnknownSentence" title="nmeatools.nmea_data_eager.UnknownSentence"><code class="xref py py-class docutils literal"><span class="pre">UnknownSentence</span></code></a> instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params args:</th><td class="field-body">The message fields.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#nmeatools.nmea_data_eager.Sentence" title="nmeatools.nmea_data_eager.Sentence"><code class="xref py py-class docutils literal"><span class="pre">Sentence</span></code></a> instance.</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sf</span> <span class="o">=</span> <span class="n">Sentence_Factory</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fields</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39;GPVTG,59.53,T,,M,0.14,N,0.3,K&#39;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">sf</span><span class="p">(</span><span class="o">*</span><span class="n">fields</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span>
+<span class="go">GPVTG {&#39;_args&#39;: [&#39;59.53&#39;, &#39;T&#39;, &#39;&#39;, &#39;M&#39;, &#39;0.14&#39;, &#39;N&#39;, &#39;0.3&#39;, &#39;K&#39;],</span>
+<span class="go"> &#39;_name&#39;: &#39;GPVTG&#39;,</span>
+<span class="go"> &#39;course_1&#39;: 59.53,</span>
+<span class="go"> &#39;course_2&#39;: None,</span>
+<span class="go"> &#39;ref_1&#39;: &#39;T&#39;,</span>
+<span class="go"> &#39;ref_2&#39;: &#39;M&#39;,</span>
+<span class="go"> &#39;sog_1&#39;: 0.14,</span>
+<span class="go"> &#39;sog_2&#39;: 0.3,</span>
+<span class="go"> &#39;units_sog_1&#39;: &#39;N&#39;,</span>
+<span class="go"> &#39;units_sog_2&#39;: &#39;K&#39;}</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.Sentence_Factory.log">
+<code class="descname">log</code><em class="property"> = &lt;Logger Sentence_Factory (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.nmea_data_eager.Sentence_Factory.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.Sentence_Factory.sentence_class_map">
+<code class="descname">sentence_class_map</code><em class="property"> = {b'UnknownSentence': &lt;class 'nmeatools.nmea_data_eager.UnknownSentence'&gt;, b'GPRMC': &lt;class 'nmeatools.nmea_data_eager.GPRMC'&gt;, b'GPGGA': &lt;class 'nmeatools.nmea_data_eager.GPGGA'&gt;, b'GPGLL': &lt;class 'nmeatools.nmea_data_eager.GPGLL'&gt;, b'GPGSA': &lt;class 'nmeatools.nmea_data_eager.GPGSA'&gt;, b'GPGSV': &lt;class 'nmeatools.nmea_data_eager.GPGSV'&gt;, b'GPVTG': &lt;class 'nmeatools.nmea_data_eager.GPVTG'&gt;, b'GPZDA': &lt;class 'nmeatools.nmea_data_eager.GPZDA'&gt;, b'GPXTE': &lt;class 'nmeatools.nmea_data_eager.GPXTE'&gt;, b'GPWPL': &lt;class 'nmeatools.nmea_data_eager.GPWPL'&gt;, b'GPRTE': &lt;class 'nmeatools.nmea_data_eager.GPRTE'&gt;}</em><a class="headerlink" href="#nmeatools.nmea_data_eager.Sentence_Factory.sentence_class_map" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_eager.UnknownSentence">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">UnknownSentence</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.UnknownSentence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fallback for NMEA0183 Sentences that aren&#8217;t otherwise parseable.</p>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_eager.UnknownSentence.log">
+<code class="descname">log</code><em class="property"> = &lt;Logger UnknownSentence (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.nmea_data_eager.UnknownSentence.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="nmeatools.nmea_data_eager.lat">
+<code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">lat</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.lat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert source bytes to a latitude (deg, min) pair.
+Latitude: 2543.7024 = DDMM.MMMM</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lat</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;2543.7024&#39;</span><span class="p">)</span>
+<span class="go">(25, 43.7024)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="nmeatools.nmea_data_eager.lon">
+<code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">lon</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.lon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert source bytes to longitude (deg, mim) pair.
+Longitude: 08014.5267 = DDDMM.MMMM</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lon</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;08014.5267&#39;</span><span class="p">)</span>
+<span class="go">(80, 14.5267)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="nmeatools.nmea_data_eager.nfloat">
+<code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">nfloat</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.nfloat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to float or None</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nfloat</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nfloat</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;123.45&#39;</span><span class="p">)</span>
+<span class="go">123.45</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="nmeatools.nmea_data_eager.nint">
+<code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">nint</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.nint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to int or None</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nint</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nint</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;123&#39;</span><span class="p">)</span>
+<span class="go">123</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="nmeatools.nmea_data_eager.sample_CP">
+<code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">sample_CP</code><span class="sig-paren">(</span><em>listener</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.sample_CP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chart Plotter. The background message cycle is filtered out. Reads until Ctrl-C.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nmeatools.nmea_data_eager.sample_GPS">
+<code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">sample_GPS</code><span class="sig-paren">(</span><em>listener</em>, <em>limit=16</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.sample_GPS" title="Permalink to this definition">¶</a></dt>
+<dd><p>GPS. Displays selected messages until some limit is reached.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nmeatools.nmea_data_eager.text">
+<code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">text</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert source bytes to text.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">text</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;xyz&#39;</span><span class="p">)</span>
+<span class="go">&#39;xyz&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="nmeatools.nmea_data_eager.utc_date">
+<code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">utc_date</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.utc_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert source bytes to UTC date.
+mmddyy</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">utc_date</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;091056&#39;</span><span class="p">)</span>
+<span class="go">(9, 10, 56)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="nmeatools.nmea_data_eager.utc_time">
+<code class="descclassname">nmeatools.nmea_data_eager.</code><code class="descname">utc_time</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_eager.utc_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert source bytes to UTC time as (H, M, S) triple
+HHMMSS.000</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">utc_time</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;123456.000&#39;</span><span class="p">)</span>
+<span class="go">(12, 34, 56.0)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-nmeatools.nmea_data_lazy">
+<span id="nmea-data-lazy"></span><h2>nmea_data_lazy<a class="headerlink" href="#module-nmeatools.nmea_data_lazy" title="Permalink to this headline">¶</a></h2>
+<p>Define NMEA Sentences. 
+This lazily builds fields from the source bytes using descriptors
+for the individual conversions.</p>
+<p>Messages that are captured and (to an extent) parsed.</p>
+<ul class="simple">
+<li>$GPWPL - Waypoint (example: b&#8216;3845.363&#8217;, b&#8217;N&#8217;, b&#8216;07629.551&#8217;, b&#8217;W&#8217;, b&#8217;FISHTRP&#8217;)</li>
+<li>$GPRTE - Route</li>
+</ul>
+<p>These are not (currently) interpreted.</p>
+<ul class="simple">
+<li>$GPDBT - Depth Below Transducer</li>
+<li>$GPDPT - Depth</li>
+<li>$GPMTW - Water Temperature</li>
+<li>$GPVHW - Water Speed and Heading</li>
+<li>$GPRMC - Recommended Minimum Specific GPS/TRANSIT Data</li>
+<li>$GPGGA - Global Positioning System Fix Data</li>
+<li>$GPGLL - Geographic position, latitude / longitude</li>
+<li>$GPGSA - GPS DOP and active satellites</li>
+<li>$GPGSV - GPS Satellites in view</li>
+<li>$GPVTG - Track made good and ground speed</li>
+<li>$GPZDA - Date &amp; Time</li>
+<li>$GPXTE - Cross-track error, Measured</li>
+</ul>
+<div class="section" id="unit-tests">
+<h3>Unit Tests<a class="headerlink" href="#unit-tests" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Sample</span><span class="p">(</span><span class="n">Sentence</span><span class="p">):</span>    
+<span class="gp">... </span>   <span class="n">f0</span> <span class="o">=</span> <span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Item One&quot;</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="n">f1</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Item Two&quot;</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nd">@property</span>
+<span class="gp">... </span>   <span class="k">def</span> <span class="nf">f2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>       <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">f1</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">Sample</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;Sample&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;2.3&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">f0</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">f1</span>
+<span class="go">2.3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">f2</span>
+<span class="go">3.3</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="n">GPWPL</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;GPWPL&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;5128.62&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;00027.58&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;EGLL&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">txt</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">s2</span><span class="o">.</span><span class="n">to_json</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+<span class="go">{&quot;_class&quot;: &quot;GPWPL&quot;, &quot;_args&quot;: [&quot;GPWPL&quot;, &quot;5128.62&quot;, &quot;N&quot;, &quot;00027.58&quot;, &quot;W&quot;, &quot;EGLL&quot;]}</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="n">decode</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+<span class="go">GPWPL 51°28.62′N 0°27.58′W EGLL</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.Field">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">Field</code><span class="sig-paren">(</span><em>position</em>, <em>title</em>, <em>name=None</em>, <em>conversion=&lt;function Field.&lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.Field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a field. Provide the position, a description, and a conversion rule.</p>
+<p>The name is there to parallel the <code class="docutils literal"><span class="pre">nmea_data</span></code> Namedtuple implementation.</p>
+<p>Subclasses should include conversions directly.
+This can be used with conversion plug-in functions.</p>
+<p><code class="docutils literal"><span class="pre">f</span> <span class="pre">=</span> <span class="pre">Text(1,</span> <span class="pre">&quot;Description&quot;)</span></code> is better than</p>
+<p><code class="docutils literal"><span class="pre">f</span> <span class="pre">=</span> <span class="pre">Field(1,</span> <span class="pre">&quot;Description&quot;,</span> <span class="pre">&quot;f&quot;,</span> <span class="pre">text)</span></code> which is better than</p>
+<p><code class="docutils literal"><span class="pre">f</span> <span class="pre">=</span> <span class="pre">Field(1,</span> <span class="pre">&quot;Description&quot;,</span> <span class="pre">&quot;f&quot;,</span> <span class="pre">lambda</span> <span class="pre">b:</span> <span class="pre">b.decode('ascii'))</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Sample</span><span class="p">(</span><span class="n">Sentence</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">f</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">b</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Sample</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;Sample&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">f</span>
+<span class="go">&#39;text&#39;</span>
+</pre></div>
+</div>
+<dl class="staticmethod">
+<dt id="nmeatools.nmea_data_lazy.Field.transform">
+<em class="property">static </em><code class="descname">transform</code><span class="sig-paren">(</span><em>func</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.Field.transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.Float">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">Float</code><span class="sig-paren">(</span><em>position</em>, <em>title</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.Float" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="staticmethod">
+<dt id="nmeatools.nmea_data_lazy.Float.nfloat">
+<em class="property">static </em><code class="descname">nfloat</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.Float.nfloat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to float or None</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Float</span><span class="o">.</span><span class="n">nfloat</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Float</span><span class="o">.</span><span class="n">nfloat</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;123.45&#39;</span><span class="p">)</span>
+<span class="go">123.45</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.GPRTE">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">GPRTE</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPRTE" title="Permalink to this definition">¶</a></dt>
+<dd><p>GP Route</p>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$GPRTE,2,1,c,0,PBRCPK,PBRTO,PTELGR,PPLAND,PYAMBU,PPFAIR,PWARRN,PMORTL,PLISMR*73
+$GPRTE,2,2,c,0,PCRESY,GRYRIE,GCORIO,GWERR,GWESTG,7FED*34
+       1 2 3 4 5 ..
+       
+1. Number of sentences in sequence
+2. Sentence number
+3. &#39;c&#39; = Current active route, &#39;w&#39; = waypoint list starts with destination waypoint
+4. Name or number of the active route
+5. Rest of the body is the names of waypoints in Route
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.GPRTE.id">
+<code class="descname">id</code><em class="property"> = None</em><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPRTE.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.GPRTE.length">
+<code class="descname">length</code><em class="property"> = None</em><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPRTE.length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.GPRTE.sentence">
+<code class="descname">sentence</code><em class="property"> = None</em><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPRTE.sentence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.GPRTE.status">
+<code class="descname">status</code><em class="property"> = None</em><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPRTE.status" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.GPRTE.waypoints">
+<code class="descname">waypoints</code><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPRTE.waypoints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.GPWPL">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">GPWPL</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPWPL" title="Permalink to this definition">¶</a></dt>
+<dd><p>GP Waypoint Location</p>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$GPWPL,4917.16,N,12310.64,W,003*65
+       1         2          3
+       
+  1. 4917.16,N    Latitude of waypoint. This is 49°16.17′N
+  2. 12310.64,W   Longitude of waypoint. This is 123°10.64′W
+  3. 003          Waypoint ID
+
+$GPWPL,5128.62,N,00027.58,W,EGLL*59
+       1       2 3        4 5
+
+  1. 5128.62   Latitude of this waypoint
+  2. N         North/South
+  3. 00027.58  Longitude of this waypoint
+  4. W         East/West
+  5. EGLL      Ident of this waypoint
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.GPWPL.lat_angle">
+<code class="descname">lat_angle</code><em class="property"> = None</em><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPWPL.lat_angle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.GPWPL.lat_h">
+<code class="descname">lat_h</code><em class="property"> = None</em><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPWPL.lat_h" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.GPWPL.latitude">
+<code class="descname">latitude</code><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPWPL.latitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Two source fields are combined: the angle and the hemisphere (N/S).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.GPWPL.lon_angle">
+<code class="descname">lon_angle</code><em class="property"> = None</em><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPWPL.lon_angle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.GPWPL.lon_h">
+<code class="descname">lon_h</code><em class="property"> = None</em><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPWPL.lon_h" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.GPWPL.longitude">
+<code class="descname">longitude</code><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPWPL.longitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Two source fields are combined: the angle and the hemisphere (E/W).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.GPWPL.name">
+<code class="descname">name</code><em class="property"> = None</em><a class="headerlink" href="#nmeatools.nmea_data_lazy.GPWPL.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.Integer">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">Integer</code><span class="sig-paren">(</span><em>position</em>, <em>title</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.Integer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="staticmethod">
+<dt id="nmeatools.nmea_data_lazy.Integer.nint">
+<em class="property">static </em><code class="descname">nint</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.Integer.nint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to int or None</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Integer</span><span class="o">.</span><span class="n">nint</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Integer</span><span class="o">.</span><span class="n">nint</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;123&#39;</span><span class="p">)</span>
+<span class="go">123</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.LatAngle">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">LatAngle</code><span class="sig-paren">(</span><em>position</em>, <em>title</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.LatAngle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Note that the hemisphere information (N/S) isn&#8217;t present.</p>
+<dl class="staticmethod">
+<dt id="nmeatools.nmea_data_lazy.LatAngle.lat">
+<em class="property">static </em><code class="descname">lat</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.LatAngle.lat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert source bytes to latitude (deg, min) pair.
+Latitude: 2543.7024 = DDMM.MMMM</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">LatAngle</span><span class="o">.</span><span class="n">lat</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;2543.7024&#39;</span><span class="p">)</span>
+<span class="go">(25, 43.7024)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.Latitude">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">Latitude</code><span class="sig-paren">(</span><em>pos_angle</em>, <em>pos_h</em>, <em>title</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.Latitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Two source fields are combined: the angle and the hemisphere (N/S).</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.LonAngle">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">LonAngle</code><span class="sig-paren">(</span><em>position</em>, <em>title</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.LonAngle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Note that the hemisphere information (E/W) isn&#8217;t present.</p>
+<dl class="staticmethod">
+<dt id="nmeatools.nmea_data_lazy.LonAngle.lon">
+<em class="property">static </em><code class="descname">lon</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.LonAngle.lon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert source bytes to longitude (deg, min) pair.
+Longitude: 08014.5267 = DDDMM.MMMM</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">LonAngle</span><span class="o">.</span><span class="n">lon</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;08014.5267&#39;</span><span class="p">)</span>
+<span class="go">(80, 14.5267)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.Longitude">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">Longitude</code><span class="sig-paren">(</span><em>pos_angle</em>, <em>pos_h</em>, <em>title</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.Longitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Two source fields are combined: the angle and the hemisphere (E/W).</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.Sentence">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">Sentence</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.Sentence" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Sample</span><span class="p">(</span><span class="n">Sentence</span><span class="p">):</span>    
+<span class="gp">... </span>    <span class="n">f0</span> <span class="o">=</span> <span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Item One&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">f1</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Item Two&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nd">@property</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">f2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">f1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Sample</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;Sample&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;2.3&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">f0</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">f1</span>
+<span class="go">2.3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">f2</span>
+<span class="go">3.3</span>
+</pre></div>
+</div>
+<p>Can be converted from original fields = [...] lists.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Sample2</span><span class="p">(</span><span class="n">Sentence</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">f0</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Item One&quot;</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">f1</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Item Two&quot;</span><span class="p">,</span> <span class="s2">&quot;f1&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nd">@property</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">f2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">f1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Sample2</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;Sample&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;2.3&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">f0</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">f1</span>
+<span class="go">2.3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">f2</span>
+<span class="go">3.3</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.Sentence.log">
+<code class="descname">log</code><em class="property"> = &lt;Logger Sentence (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.nmea_data_lazy.Sentence.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.Sentence.to_json">
+<code class="descname">to_json</code><a class="headerlink" href="#nmeatools.nmea_data_lazy.Sentence.to_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.Sentence_Factory">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">Sentence_Factory</code><a class="headerlink" href="#nmeatools.nmea_data_lazy.Sentence_Factory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a sequence of values, locate the class with a name that
+matches the sentence header and instantiate that class.</p>
+<p>This examines all subclasses of <a class="reference internal" href="#nmeatools.nmea_data_lazy.Sentence" title="nmeatools.nmea_data_lazy.Sentence"><code class="xref py py-class docutils literal"><span class="pre">Sentence</span></code></a>. The class names
+must match the sentence header.
+If there&#8217;s no match, create an <a class="reference internal" href="#nmeatools.nmea_data_lazy.UnknownSentence" title="nmeatools.nmea_data_lazy.UnknownSentence"><code class="xref py py-class docutils literal"><span class="pre">UnknownSentence</span></code></a> instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params args:</th><td class="field-body">The message fields.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#nmeatools.nmea_data_lazy.Sentence" title="nmeatools.nmea_data_lazy.Sentence"><code class="xref py py-class docutils literal"><span class="pre">Sentence</span></code></a> instance.</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sf</span> <span class="o">=</span> <span class="n">Sentence_Factory</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fields1</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39;GPVTG,59.53,T,,M,0.14,N,0.3,K&#39;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">sf</span><span class="p">(</span><span class="o">*</span><span class="n">fields1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span>
+<span class="go">UnknownSentence(*(b&#39;GPVTG&#39;, b&#39;59.53&#39;, b&#39;T&#39;, b&#39;&#39;, b&#39;M&#39;, b&#39;0.14&#39;, b&#39;N&#39;, b&#39;0.3&#39;, b&#39;K&#39;))</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fields2</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39;GPWPL&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;5128.62&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;00027.58&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;EGLL&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="n">sf</span><span class="p">(</span><span class="o">*</span><span class="n">fields2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span>
+<span class="go">GPWPL 51°28.62′N 0°27.58′W EGLL</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.Sentence_Factory.log">
+<code class="descname">log</code><em class="property"> = &lt;Logger Sentence_Factory (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.nmea_data_lazy.Sentence_Factory.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.Text">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">Text</code><span class="sig-paren">(</span><em>position</em>, <em>title</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.Text" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="staticmethod">
+<dt id="nmeatools.nmea_data_lazy.Text.text">
+<em class="property">static </em><code class="descname">text</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.Text.text" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Text</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;xyz&#39;</span><span class="p">)</span>
+<span class="go">&#39;xyz&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.UTC_Date">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">UTC_Date</code><span class="sig-paren">(</span><em>position</em>, <em>title</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.UTC_Date" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="staticmethod">
+<dt id="nmeatools.nmea_data_lazy.UTC_Date.utc_date">
+<em class="property">static </em><code class="descname">utc_date</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.UTC_Date.utc_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert source bytes to UTC date.
+mmddyy</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">UTC_Date</span><span class="o">.</span><span class="n">utc_date</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;091056&#39;</span><span class="p">)</span>
+<span class="go">(9, 10, 56)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.UTC_Time">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">UTC_Time</code><span class="sig-paren">(</span><em>position</em>, <em>title</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.UTC_Time" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="staticmethod">
+<dt id="nmeatools.nmea_data_lazy.UTC_Time.utc_time">
+<em class="property">static </em><code class="descname">utc_time</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.UTC_Time.utc_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert source bytes to UTC time as (H, M, S) triple
+HHMMSS.000</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">UTC_Time</span><span class="o">.</span><span class="n">utc_time</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;123456.000&#39;</span><span class="p">)</span>
+<span class="go">(12, 34, 56.0)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nmeatools.nmea_data_lazy.UnknownSentence">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">UnknownSentence</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.UnknownSentence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fallback for NMEA0183 Sentences that aren&#8217;t otherwise parseable.</p>
+<dl class="attribute">
+<dt id="nmeatools.nmea_data_lazy.UnknownSentence.log">
+<code class="descname">log</code><em class="property"> = &lt;Logger UnknownSentence (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.nmea_data_lazy.UnknownSentence.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="nmeatools.nmea_data_lazy.decode">
+<code class="descclassname">nmeatools.nmea_data_lazy.</code><code class="descname">decode</code><span class="sig-paren">(</span><em>object</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_data_lazy.decode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-nmeatools.nmea_device">
+<span id="nmea-device"></span><h2>nmea_device<a class="headerlink" href="#module-nmeatools.nmea_device" title="Permalink to this headline">¶</a></h2>
+<p>Listener to NMEA interface.</p>
+<p>Here&#8217;s an example of NMEA 0183 to USB hardware.</p>
+<p><a class="reference external" href="http://www.digitalyachtamerica.com/index.php/en/products/interfacing/nmeausb/product/67-usb-to-nmea-adaptor">http://www.digitalyachtamerica.com/index.php/en/products/interfacing/nmeausb/product/67-usb-to-nmea-adaptor</a></p>
+<p>PySerial is required. Using PySerial 3.3.
+<a class="reference external" href="https://pypi.python.org/pypi/pyserial">https://pypi.python.org/pypi/pyserial</a></p>
+<p>Typical interface to NMEA 0183 requires this kind of serial interface:</p>
+<ul class="simple">
+<li>Typical Baud rate   4800</li>
+<li>Data bits   8</li>
+<li>Parity      None</li>
+<li>Stop bits   1</li>
+<li>Handshake   None</li>
+</ul>
+<p>We&#8217;ll decode NMEA 0183 Sentences. See <a class="reference external" href="http://www.robosoft.info/en/technologies/knowledgebase/nmea0183">http://www.robosoft.info/en/technologies/knowledgebase/nmea0183</a></p>
+<p>The checksum is the bitwise exclusive OR of ASCII codes of all characters between the $ and *.
+This is done with <code class="docutils literal"><span class="pre">reduce(operator.xor,</span> <span class="pre">bytes)</span></code></p>
+<p>The listener is an Interator as well as a Context Manager.</p>
+<p>Also &#8211; since messages are &#8221;,&#8221;-separated, it handles the split operation.</p>
+<div class="section" id="reference">
+<h3>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h3>
+<p>See <a class="reference external" href="http://en.wikipedia.org/wiki/NMEA_0183">http://en.wikipedia.org/wiki/NMEA_0183</a></p>
+<p>See <a class="reference external" href="http://www.gpsinformation.org/dale/nmea.htm#nmea">http://www.gpsinformation.org/dale/nmea.htm#nmea</a></p>
+<p>See <a class="reference external" href="http://freenmea.net/docs">http://freenmea.net/docs</a></p>
+<p>See <a class="reference external" href="http://www.catb.org/gpsd/NMEA.html">http://www.catb.org/gpsd/NMEA.html</a></p>
+<p>See <a class="reference external" href="https://www.sparkfun.com/datasheets/GPS/NMEA%20Reference%20Manual1.pdf">https://www.sparkfun.com/datasheets/GPS/NMEA%20Reference%20Manual1.pdf</a></p>
+</div>
+<div class="section" id="unit-test">
+<h3>Unit Test<a class="headerlink" href="#unit-test" title="Permalink to this headline">¶</a></h3>
+<p>Note the subtle complexity of passing end-of-line in a string to doctest.
+We can&#8217;t simply use ``
+`` in a sample input string, or the compiler being
+used by doctest gets confused.</p>
+<p>Good Messages:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m0</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPRMC,162823.000,A,2542.9243,N,08013.6310,W,0.14,59.53,180214,,*2F</span>
+<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m1</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPVTG,59.53,T,,M,0.14,N,0.3,K*5C</span>
+<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m2</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPGGA,162824.000,2542.9243,N,08013.6311,W,1,06,1.5,3.3,M,-27.3,M,,0000*6E</span>
+<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m3</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPGLL,2542.9243,N,08013.6310,W,162823.000,A*29</span>
+<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m4</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPGSA,A,3,29,24,18,14,22,27,,,,,,,2.9,1.5,2.5*3E</span>
+<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m5</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPGSV,3,1,10,21,82,249,18,24,54,090,37,18,52,343,33,15,32,039,34*7D</span>
+<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m6</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPGSV,3,2,10,14,28,244,36,22,27,307,33,29,12,190,32,06,10,293,28*74</span>
+<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m7</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;$GPGSV,3,3,10,27,08,303,27,12,00,139,25*7F</span>
+<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Listener</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m0</span><span class="p">)</span>
+<span class="go">(b&#39;GPRMC&#39;, b&#39;162823.000&#39;, b&#39;A&#39;, b&#39;2542.9243&#39;, b&#39;N&#39;, b&#39;08013.6310&#39;, b&#39;W&#39;, b&#39;0.14&#39;, b&#39;59.53&#39;, b&#39;180214&#39;, b&#39;&#39;, b&#39;&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Listener</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span>
+<span class="go">(b&#39;GPVTG&#39;, b&#39;59.53&#39;, b&#39;T&#39;, b&#39;&#39;, b&#39;M&#39;, b&#39;0.14&#39;, b&#39;N&#39;, b&#39;0.3&#39;, b&#39;K&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Listener</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span>
+<span class="go">(b&#39;GPGGA&#39;, b&#39;162824.000&#39;, b&#39;2542.9243&#39;, b&#39;N&#39;, b&#39;08013.6311&#39;, b&#39;W&#39;, b&#39;1&#39;, b&#39;06&#39;, b&#39;1.5&#39;, b&#39;3.3&#39;, b&#39;M&#39;, b&#39;-27.3&#39;, b&#39;M&#39;, b&#39;&#39;, b&#39;0000&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Listener</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m4</span><span class="p">)</span>
+<span class="go">(b&#39;GPGSA&#39;, b&#39;A&#39;, b&#39;3&#39;, b&#39;29&#39;, b&#39;24&#39;, b&#39;18&#39;, b&#39;14&#39;, b&#39;22&#39;, b&#39;27&#39;, b&#39;&#39;, b&#39;&#39;, b&#39;&#39;, b&#39;&#39;, b&#39;&#39;, b&#39;&#39;, b&#39;2.9&#39;, b&#39;1.5&#39;, b&#39;2.5&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Listener</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m5</span><span class="p">)</span>
+<span class="go">(b&#39;GPGSV&#39;, b&#39;3&#39;, b&#39;1&#39;, b&#39;10&#39;, b&#39;21&#39;, b&#39;82&#39;, b&#39;249&#39;, b&#39;18&#39;, b&#39;24&#39;, b&#39;54&#39;, b&#39;090&#39;, b&#39;37&#39;, b&#39;18&#39;, b&#39;52&#39;, b&#39;343&#39;, b&#39;33&#39;, b&#39;15&#39;, b&#39;32&#39;, b&#39;039&#39;, b&#39;34&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Listener</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m6</span><span class="p">)</span>
+<span class="go">(b&#39;GPGSV&#39;, b&#39;3&#39;, b&#39;2&#39;, b&#39;10&#39;, b&#39;14&#39;, b&#39;28&#39;, b&#39;244&#39;, b&#39;36&#39;, b&#39;22&#39;, b&#39;27&#39;, b&#39;307&#39;, b&#39;33&#39;, b&#39;29&#39;, b&#39;12&#39;, b&#39;190&#39;, b&#39;32&#39;, b&#39;06&#39;, b&#39;10&#39;, b&#39;293&#39;, b&#39;28&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Listener</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m7</span><span class="p">)</span>
+<span class="go">(b&#39;GPGSV&#39;, b&#39;3&#39;, b&#39;3&#39;, b&#39;10&#39;, b&#39;27&#39;, b&#39;08&#39;, b&#39;303&#39;, b&#39;27&#39;, b&#39;12&#39;, b&#39;00&#39;, b&#39;139&#39;, b&#39;25&#39;)</span>
+</pre></div>
+</div>
+<p>Broken Message, typical case:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b0</span><span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&#39;&#39;42.9243,N,08013.6310,W,0.14,59.53,180214,,*2F</span>
+<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">=</span> <span class="n">Listener</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">b0</span><span class="p">)</span>  
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/doctest.py&quot;</span>, line <span class="m">1330</span>, in <span class="n">__run</span>
+    <span class="n">compileflags</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">test</span><span class="o">.</span><span class="n">globs</span><span class="p">)</span>
+  File <span class="nb">&quot;&lt;doctest __main__[16]&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+    <span class="n">x</span><span class="o">=</span> <span class="n">Scanner</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">b0</span><span class="p">)</span>
+  File <span class="nb">&quot;gps_spike.py&quot;</span>, line <span class="m">143</span>, in <span class="n">validate</span>
+    <span class="k">assert</span> <span class="n">sentence_bytes</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;$&#39;</span><span class="p">),</span> <span class="s2">&quot;Sentence Fragment&quot;</span>
+<span class="gr">AssertionError</span>: <span class="n">Sentence Fragment</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="nmeatools.nmea_device.Listener">
+<em class="property">class </em><code class="descclassname">nmeatools.nmea_device.</code><code class="descname">Listener</code><span class="sig-paren">(</span><em>options</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_device.Listener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Listen to the device, yielding a sequence of sentences.</p>
+<p>This is an Interable and a Context Manager for listening to an NMEA-0183 device.</p>
+<p>The typical use case is this</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Listener</span><span class="p">(</span><span class="n">options</span><span class="p">)</span> <span class="k">as</span> <span class="n">GPS</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">sentnce</span> <span class="ow">in</span> <span class="n">GPS</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="nmeatools.nmea_device.Listener.log">
+<code class="descname">log</code><em class="property"> = &lt;Logger Listener (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.nmea_device.Listener.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="nmeatools.nmea_device.Listener.validate">
+<em class="property">static </em><code class="descname">validate</code><span class="sig-paren">(</span><em>sentence_bytes</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.nmea_device.Listener.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate an NMEA sentence, returning either a tuple of substrings or an 
+<code class="xref py py-exc docutils literal"><span class="pre">AssertionError</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sentence_bytes</strong> &#8211; A bytes object with the raw sentence.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple with individual fields, suitable for use with a
+<code class="xref py py-class docutils literal"><span class="pre">Sentence_Factory</span></code> isntance.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>AssertionError</strong> &#8211; If the sentence is incomplete in some way.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-nmeatools.waypoint_merge">
+<span id="waypoint-merge"></span><h2>waypoint_merge<a class="headerlink" href="#module-nmeatools.waypoint_merge" title="Permalink to this headline">¶</a></h2>
+<p>Merge waypoints from two sources:</p>
+<ol class="arabic simple">
+<li>The master GPX file. These have precedence.
+Any duplicates here create warnings.</li>
+<li>A new GPX file. Duplicates from here are dropped.</li>
+</ol>
+<p>The output is a combined list with duplicated locations removed.
+This becomes the new master.</p>
+<dl class="class">
+<dt id="nmeatools.waypoint_merge.Waypoint">
+<em class="property">class </em><code class="descclassname">nmeatools.waypoint_merge.</code><code class="descname">Waypoint</code><span class="sig-paren">(</span><em>lat</em>, <em>lon</em>, <em>name</em>, <em>time</em>, <em>sym</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.waypoint_merge.Waypoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Behaves a little bit like an NMEA GPWPL sentence.</p>
+<dl class="attribute">
+<dt id="nmeatools.waypoint_merge.Waypoint.args">
+<code class="descname">args</code><a class="headerlink" href="#nmeatools.waypoint_merge.Waypoint.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nmeatools.waypoint_merge.Waypoint.distance">
+<code class="descname">distance</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.waypoint_merge.Waypoint.distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance in NM.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nmeatools.waypoint_merge.Waypoint.log">
+<code class="descname">log</code><em class="property"> = &lt;Logger Waypoint (WARNING)&gt;</em><a class="headerlink" href="#nmeatools.waypoint_merge.Waypoint.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="nmeatools.waypoint_merge.merge">
+<code class="descclassname">nmeatools.waypoint_merge.</code><code class="descname">merge</code><span class="sig-paren">(</span><em>master_path=PosixPath('/Volumes/NO NAME/WaypointsRoutesTracks.gpx')</em>, <em>update_path=PosixPath('/Users/slott/Documents/Sailing/Cruise History/routes/waypoints.gpx')</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.waypoint_merge.merge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="nmeatools.waypoint_merge.waypoint_iter">
+<code class="descclassname">nmeatools.waypoint_merge.</code><code class="descname">waypoint_iter</code><span class="sig-paren">(</span><em>root</em>, <em>namespace</em><span class="sig-paren">)</span><a class="headerlink" href="#nmeatools.waypoint_merge.waypoint_iter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="module-nmeatools.waypoint_to_gpx">
 <span id="waypoint-to-gpx"></span><h2>waypoint_to_gpx<a class="headerlink" href="#module-nmeatools.waypoint_to_gpx" title="Permalink to this headline">¶</a></h2>
@@ -810,7 +1379,7 @@ created by the <strong class="program">nmea_capture</strong> program.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>document</strong> &#8211; The root document</li>
-<li><strong>s</strong> &#8211; An <a class="reference internal" href="#nmeatools.nmea_data.GPWPL" title="nmeatools.nmea_data.GPWPL"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPWPL</span></code></a> instance.</li>
+<li><strong>s</strong> &#8211; An <code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPWPL</span></code> instance.</li>
 <li><strong>sym</strong> &#8211; An optional string with a symbol name to include.</li>
 </ul>
 </td>
@@ -832,7 +1401,7 @@ created by the <strong class="program">nmea_capture</strong> program.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>document</strong> &#8211; The root document</li>
-<li><strong>s</strong> &#8211; An <a class="reference internal" href="#nmeatools.nmea_data.GPWPL" title="nmeatools.nmea_data.GPWPL"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPWPL</span></code></a> instance.</li>
+<li><strong>s</strong> &#8211; An <code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPWPL</span></code> instance.</li>
 </ul>
 </td>
 </tr>
@@ -921,7 +1490,7 @@ is supported currently.</p>
 <ol class="arabic simple">
 <li>Save waypoint as {name : sentence} map.</li>
 <li>Flatten route sentences into a single list of waypoints.
-This presumes the <a class="reference internal" href="#nmeatools.nmea_data.GPRTE" title="nmeatools.nmea_data.GPRTE"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPRTE</span></code></a> sentences
+This presumes the <code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPRTE</span></code> sentences
 are already in their proper order.</li>
 </ol>
 <table class="docutils field-list" frame="void" rules="none">
@@ -929,8 +1498,8 @@ are already in their proper order.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sentences</strong> &#8211; iterable sequence of <a class="reference internal" href="#nmeatools.nmea_data.GPWPL" title="nmeatools.nmea_data.GPWPL"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPWPL</span></code></a> and
-<a class="reference internal" href="#nmeatools.nmea_data.GPRTE" title="nmeatools.nmea_data.GPRTE"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPRTE</span></code></a> instances</li>
+<li><strong>sentences</strong> &#8211; iterable sequence of <code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPWPL</span></code> and
+<code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPRTE</span></code> instances</li>
 <li><strong>name</strong> &#8211; The string name to put in the metadata</li>
 <li><strong>description</strong> &#8211; the string description to put in the metadata</li>
 </ul>
@@ -952,7 +1521,7 @@ are already in their proper order.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sentences</strong> &#8211; iterable sequence of <a class="reference internal" href="#nmeatools.nmea_data.GPWPL" title="nmeatools.nmea_data.GPWPL"><code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPWPL</span></code></a> instances</li>
+<li><strong>sentences</strong> &#8211; iterable sequence of <code class="xref py py-class docutils literal"><span class="pre">nmeatools.nmea_data.GPWPL</span></code> instances</li>
 <li><strong>name</strong> &#8211; The string name to put in the metadata</li>
 <li><strong>description</strong> &#8211; the string description to put in the metadata</li>
 </ul>
@@ -978,16 +1547,25 @@ are already in their proper order.</li>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">API</a><ul>
-<li><a class="reference internal" href="#module-nmeatools.nmea_data">nmea_data</a><ul>
-<li><a class="reference internal" href="#unit-test">Unit Test</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-nmeatools.common">common</a></li>
+<li><a class="reference internal" href="#module-nmeatools.haversine">haversine</a></li>
 <li><a class="reference internal" href="#module-nmeatools.nmea_capture">nmea_capture</a><ul>
 <li><a class="reference internal" href="#arguments">Arguments</a></li>
 <li><a class="reference internal" href="#options">Options</a></li>
 <li><a class="reference internal" href="#description">Description</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#module-nmeatools.nmea_data_eager">nmea_data_eager</a></li>
+<li><a class="reference internal" href="#module-nmeatools.nmea_data_lazy">nmea_data_lazy</a><ul>
+<li><a class="reference internal" href="#unit-tests">Unit Tests</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-nmeatools.nmea_device">nmea_device</a><ul>
+<li><a class="reference internal" href="#reference">Reference</a></li>
+<li><a class="reference internal" href="#unit-test">Unit Test</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-nmeatools.waypoint_merge">waypoint_merge</a></li>
 <li><a class="reference internal" href="#module-nmeatools.waypoint_to_gpx">waypoint_to_gpx</a><ul>
 <li><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li><a class="reference internal" href="#id1">Arguments</a></li>
@@ -1001,7 +1579,7 @@ are already in their proper order.</li>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="conversion.html" title="previous chapter">Conversion</a></li>
+      <li>Previous: <a href="merging.html" title="previous chapter">Merging</a></li>
   </ul></li>
 </ul>
 </div>

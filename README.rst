@@ -24,13 +24,13 @@ Install pyserial.
 
 Download NMEA-Tools.
 
-You *can* install it. It's doubtful, however, that it does exactly what you want.
+You *can* install ``nmeatools``. It's doubtful, however, that it does exactly what you want.
 Since you're going to tinker, it's best to work directly in the repository
 that you forked from Git Hub.
 
 ::
 
-    export PYTHONPATH=/path/to/NMEA-tools/nmeatools
+    export PYTHONPATH=/path/to/NMEA-tools
 
 
 More Information

@@ -80,7 +80,6 @@ class Field:
         self.position = position
         self.function = conversion
         self.description = title
-        self.cache = None
         
     @staticmethod
     def transform(func, value):
@@ -88,11 +87,9 @@ class Field:
     
     def __get__(self, object, class_):
         # print(f"get {object} {class_}")
-        if self.cache is None:
-            if object is not None:
-                func = self.function
-                self.cache = self.transform(self.function, object.args[self.position])
-        return self.cache
+        if object is not None:
+            func = self.function
+            return self.transform(self.function, object.args[self.position])
 
 class Text(Field):
     def __init__(self, position, title):
@@ -209,32 +206,30 @@ class LonAngle(Field):
 class Latitude(Field):
     """Two source fields are combined: the angle and the hemisphere (N/S)."""
     def __init__(self, pos_angle, pos_h, title):
-        self.position = pos_angle, pos_h
+        self.pos_angle = pos_angle
+        self.pos_h = pos_h
         self.description = title
-        self.cache = None
         
     def __get__(self, object, class_):
         # print(f"get {object} {class_}")
-        if self.cache is None:
+        if object.args[self.pos_angle] and  object.args[self.pos_h]:
             lat_deg, lat_min = LatAngle.lat(object.args[self.pos_angle])
             lat_h = object.args[self.pos_h]
-            self.cache = (lat_deg + lat_min/60) * (-1 if lat_h == 'S' else +1)
-        return self.cache
+            return (lat_deg + lat_min/60) * (-1 if lat_h == b'S' else +1)
         
 class Longitude(Field):
     """Two source fields are combined: the angle and the hemisphere (E/W)."""
     def __init__(self, pos_angle, pos_h, title):
-        self.position = pos_angle, pos_h
+        self.pos_angle = pos_angle
+        self.pos_h = pos_h
         self.description = title
-        self.cache = None
         
     def __get__(self, object, class_):
         # print(f"get {object} {class_}")
-        if self.cache is None:
+        if object.args[self.pos_angle] and  object.args[self.pos_h]:
             lon_deg, lon_min = LonAngle.lon(object.args[self.pos_angle])
             lon_h = object.args[self.pos_h]
-            self.cache = (lon_deg + lon_min/60) * (-1 if lon_h == 'W' else +1)
-        return self.cache
+            return (lon_deg + lon_min/60) * (-1 if lon_h == b'W' else +1)
 
 @logged
 class Sentence:
@@ -374,6 +369,11 @@ class GPWPL(Sentence):
           4. W         East/West
           5. EGLL      Ident of this waypoint
     
+    >>> x = GPWPL(b'GPWPL', b'4917.16', b'N', b'12310.64', b'W', b'003')
+    >>> x
+    GPWPL 49°17.16′N 123°10.64′W 003
+    >>> round(x.latitude,4), round(x.longitude,4)
+    (49.286, -123.1773)
     """
     lat_angle = LatAngle(1, "Latitude Angle")
     lat_h = Text(2, "N/S Indicator")
@@ -389,7 +389,85 @@ class GPWPL(Sentence):
             f"{self._name} {lat_deg}°{lat_min}′{self.lat_h}"
             f" {lon_deg}°{lon_min}′{self.lon_h} {self.name}"
             )
+
+class GPGGA(Sentence):
+    """GGA - essential fix data which provide 3D location and accuracy data.
+    """
+    time_utc = UTC_Time(1, 'UTC Time')
+    lat_angle = LatAngle(2, 'Latitude')
+    lat_h = Text(3, 'N/S Indicator')
+    lon_angle = LonAngle(4, 'Longitude')
+    lon_h = Text(5, 'E/W Indicator')
+    fix = Text(6, 'Position Fix')
+    sat_used = Integer(7, 'Satellites Used')
+    hdop = Float(8, 'Horizontal dilution of precision (HDOP)')
+    alt = Float(9, 'Altitude in meters according to WGS-84 ellipsoid')
+    units_alt = Text(10, 'Altitude Units')
+    geoid_sep = Float(11, 'Geoid seperation in meters according to WGS-84 ellipsoid')
+    units_sep = Text(12, 'Seperation Units')
+    age = Float(13, 'Age of DGPS data in seconds')
+    station = Text(14, 'DGPS Station ID')
+    latitude = Latitude(2, 3, "Waypoint latitude degrees")
+    longitude = Longitude(4, 5, "Waypoint longitude degrees")
+    def __repr__( self ):
+        lat_deg, lat_min = self.lat_angle
+        lon_deg, lon_min = self.lon_angle
+        return (
+            f"{self._name} {lat_deg}°{lat_min}′{self.lat_h}"
+            f" {lon_deg}°{lon_min}′{self.lon_h}"
+            f" HDOP={self.hdop}"
+            )
             
+class GPGSA(Sentence):
+    """GSA - GPS DOP and active satellites
+    """
+    mode1 = Text(1, 'Mode 1') # M = Forced 2D/3D, A = Auto 2D/3D
+    mode2 = Text(2, 'Mode 2') # 1 = No fix, 2 = 2D, 3 = 3D
+    prn_00 = Text(3, 'Satellite used on channel PRN')
+    prn_01 = Text(4, 'PRN01')
+    prn_02 = Text(5, 'PRN02')
+    prn_03 = Text(6, 'PRN03')
+    prn_04 = Text(7, 'PRN04')
+    prn_05 = Text(8, 'PRN05')
+    prn_06 = Text(9, 'PRN06')
+    prn_07 = Text(10, 'PRN07')
+    prn_08 = Text(11, 'PRN08')
+    prn_09 = Text(12, 'PRN09')
+    prn_10 = Text(13, 'PRN10')
+    prn_11 = Text(14, 'PRN11')
+    pdop = Float(15, 'Position dilution of precision (PDOP)')
+    hdop = Float(16, 'Horizontal dilution of precision (HDOP)')
+    vdop = Float(17, 'Vertical dilution of precision (VDOP)')
+    def __repr__( self ):
+        return (
+            f"{self._name} {self.pdop} {self.hdop}"
+            )
+
+class GPRMC(Sentence):
+    """RMC - Recommended Minimum Specific GNSS Data
+    """
+    time_utc = UTC_Time(1, 'UTC Time')
+    status = Text(2, 'Status')
+    lat_angle = LatAngle(3, 'Latitude')
+    lat_h = Text(4, 'N/S Indicator')
+    lon_angle = LonAngle(5, 'Longitude')
+    lon_h = Text(6, 'E/W Indicator')
+    sog = Float(7, 'Speed over ground (kt)')
+    cog = Float(8, 'Course over ground')
+    utc_date = UTC_Date(9, 'UTC Date')
+    mag_var = Float(10, 'Magnetic variation')
+    mag_var_flag = Text(11, 'Magnetic variation')
+    latitude = Latitude(2, 3, "Waypoint latitude degrees")
+    longitude = Longitude(4, 5, "Waypoint longitude degrees")
+    def __repr__( self ):
+        lat_deg, lat_min = self.lat_angle
+        lon_deg, lon_min = self.lon_angle
+        return (
+            f"{self._name} {lat_deg}°{lat_min}′{self.lat_h}"
+            f" {lon_deg}°{lon_min}′{self.lon_h}"
+            f" {self.sog} kt {self.cog}°"
+        )
+
 def decode(object):
     if set(object.keys()) == {'_class', '_args'}:
         # Mock sentence factory...

@@ -5,8 +5,8 @@ This eagerly populates many fields from the source bytes.
 Messages that are captured and (to an extent) parsed. 
 
 - $GPRMC - Recommended Minimum Specific GPS/TRANSIT Data
-- $GPGGA - Global Positioning System Fix Data
 - $GPGLL - Geographic position, latitude / longitude
+- $GPGGA - Global Positioning System Fix Data
 - $GPGSA - GPS DOP and active satellites 
 - $GPGSV - GPS Satellites in view
 - $GPVTG - Track made good and ground speed
